@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Novel Chapter Reader</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<style>
+  :root {
+    --bg-light: #f4f4f4;
+    --text-light: #333;
+    --bg-dark: #121212;
+    --text-dark: #eee;
+  }
+
+  body {
+    font-family: Arial, sans-serif;
+    background: var(--bg-light);
+    color: var(--text-light);
+    margin: 0;
+    padding: 0;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  body.dark {
+    background: var(--bg-dark);
+    color: var(--text-dark);
+  }
+
+  #controls {
+    background: #fff;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+    position: sticky;
+    top: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  body.dark #controls {
+    background: #222;
+    border-color: #444;
+  }
+
+  #controls input[type=file],
+  #controls select,
+  #controls button,
+  #controls label {
+    font-size: 16px;
+    padding: 8px;
+    flex: 1 1 auto;
+    min-width: 120px;
+    max-width: 200px;
+    background: inherit;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    color: inherit;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    cursor: pointer;
+  }
+
+  body.dark #controls input[type=file],
+  body.dark #controls select,
+  body.dark #controls button,
+  body.dark #controls label {
+    border-color: #666;
+  }
+
+  #textSizeWrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 0 1 auto;
+  }
+
+  #textSizeWrapper button {
+    padding: 6px 10px;
+    font-size: 16px;
+    cursor: pointer;
+    background: inherit;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    color: inherit;
+  }
+
+  #textSizeDisplay {
+    min-width: 35px;
+    text-align: center;
+    font-size: 16px;
+  }
+
+  #chapter-content {
+    max-width: 900px;
+    margin: auto;
+    padding: 15px;
+    background: #fff;
+    white-space: pre-wrap;
+    line-height: 1.6;
+    font-size: 1rem;
+    min-height: 300px;
+    transition: background-color 0.3s ease, color 0.3s ease, font-family 0.3s ease, font-size 0.3s ease;
+  }
+
+  body.dark #chapter-content {
+    background: #1e1e1e;
+    color: var(--text-dark);
+  }
+
+  /* Floating clipboard button styles */
+  #copyBtn {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    background: #007bff;
+    color: white;
+    border: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    transition: background-color 0.3s ease;
+  }
+  #copyBtn:hover {
+    background: #0056b3;
+  }
+
+  /* Tooltip message */
+  #copyTooltip {
+    position: fixed;
+    bottom: 85px;
+    right: 35px;
+    background: #333;
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 1001;
+  }
+  #copyTooltip.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  @media (max-width: 600px) {
+    #chapter-content {
+      padding: 12px;
+      font-size: 0.95rem;
+    }
+    
+    #controls {
+      gap: 8px;
+      justify-content: flex-start;
+      padding: 8px;
+    }
+    
+    #controls > * {
+      flex: 1 1 40%;
+      max-width: none;
+    }
+    
+    #textSizeWrapper {
+      order: 1;
+      flex: 1 1 100%;
+      justify-content: center;
+      margin-top: 8px;
+      gap: 4px;
+    }
+    
+    #fontFamilySelect {
+      order: 2;
+      flex: 1 1 100%;
+    }
+    
+    #textSizeWrapper button {
+      padding: 6px 8px !important;
+      font-size: 14px !important;
+    }
+    
+    #textSizeDisplay {
+      font-size: 14px !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div id="controls">
+  <input type="file" id="fileInput" accept=".txt,.docx" />
+  
+  <select id="chapterSelect" title="Select Chapter"></select>
+  
+  <button id="prevBtn" title="Previous Chapter">Previous</button>
+  <button id="nextBtn" title="Next Chapter">Next</button>
+
+  <!-- Dark/Light toggle -->
+  <label for="modeToggle" style="flex: 0 0 auto; cursor: pointer;">
+    <input type="checkbox" id="modeToggle" style="margin-right:6px;" /> Dark Mode
+  </label>
+
+  <!-- Text size buttons -->
+  <div id="textSizeWrapper">
+    <button id="decreaseTextSize" type="button" aria-label="Decrease text size">A−</button>
+    <span id="textSizeDisplay" aria-live="polite">16px</span>
+    <button id="increaseTextSize" type="button" aria-label="Increase text size">A+</button>
+  </div>
+
+  <!-- Font family selector -->
+  <select id="fontFamilySelect" title="Select Font Family">
+    <option value="Arial, sans-serif" selected>Arial</option>
+    <option value="Georgia, serif">Georgia</option>
+    <option value="'Courier New', monospace">Courier New</option>
+    <option value="'Times New Roman', serif">Times New Roman</option>
+    <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
+  </select>
+</div>
+
+<div id="chapter-content">
+  <em>Load a .txt or .docx file to begin.</em>
+</div>
+
+<button id="copyBtn" title="Copy chapter text">📋</button>
+<div id="copyTooltip">Copied!</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js"></script>
+<script>
+  let chapters = [];
+  let currentIndex = 0;
+
+  const fileInput = document.getElementById("fileInput");
+  const prevBtn = document.getElementById("prevBtn");
+  const nextBtn = document.getElementById("nextBtn");
+  const chapterSelect = document.getElementById("chapterSelect");
+  const chapterContent = document.getElementById("chapter-content");
+  const copyBtn = document.getElementById("copyBtn");
+  const copyTooltip = document.getElementById("copyTooltip");
+
+  const modeToggle = document.getElementById("modeToggle");
+  const fontFamilySelect = document.getElementById("fontFamilySelect");
+
+  const decreaseTextSizeBtn = document.getElementById("decreaseTextSize");
+  const increaseTextSizeBtn = document.getElementById("increaseTextSize");
+  const textSizeDisplay = document.getElementById("textSizeDisplay");
+
+  // Initial font size in pixels
+  let currentFontSize = 16;
+  const minFontSize = 12;
+  const maxFontSize = 36;
+
+  fileInput.addEventListener("change", handleFile);
+  prevBtn.addEventListener("click", prevChapter);
+  nextBtn.addEventListener("click", nextChapter);
+  chapterSelect.addEventListener("change", (e) => {
+    currentIndex = parseInt(e.target.value, 10);
+    renderChapter();
+  });
+  copyBtn.addEventListener("click", copyChapterText);
+
+  modeToggle.addEventListener("change", () => {
+    if (modeToggle.checked) {
+      document.body.classList.add("dark");
+    } else {
+      document.body.classList.remove("dark");
+    }
+  });
+
+  fontFamilySelect.addEventListener("change", () => {
+    chapterContent.style.fontFamily = fontFamilySelect.value;
+  });
+
+  decreaseTextSizeBtn.addEventListener("click", () => {
+    if (currentFontSize > minFontSize) {
+      currentFontSize--;
+      updateFontSize();
+    }
+  });
+
+  increaseTextSizeBtn.addEventListener("click", () => {
+    if (currentFontSize < maxFontSize) {
+      currentFontSize++;
+      updateFontSize();
+    }
+  });
+
+  function updateFontSize() {
+    chapterContent.style.fontSize = currentFontSize + "px";
+    textSizeDisplay.textContent = currentFontSize + "px";
+  }
+
+  function handleFile(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const ext = file.name.split(".").pop().toLowerCase();
+    if (ext === "txt") {
+      const reader = new FileReader();
+      reader.onload = () => processText(reader.result);
+      reader.readAsText(file);
+    } else if (ext === "docx") {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        mammoth
+          .extractRawText({ arrayBuffer: ev.target.result })
+          .then((result) => processText(result.value))
+          .catch((err) => alert("Error reading .docx: " + err));
+      };
+      reader.readAsArrayBuffer(file);
+    } else {
+      alert("Unsupported file type. Use .txt or .docx");
+    }
+  }
+
+  function processText(text) {
+    chapters = text
+      .split(/(?=^\s*(Chapter|Episode)\s+\d+\b)/gim)
+      .map((t) => t.trim())
+      .filter((t) => t.length > 20);
+
+    if (chapters.length === 0) {
+      chapters = [text];
+    }
+    populateDropdown();
+    currentIndex = 0;
+    renderChapter();
+  }
+
+  function populateDropdown() {
+    chapterSelect.innerHTML = "";
+    chapters.forEach((ch, i) => {
+      const title = ch.split("\n")[0] || `Chapter ${i + 1}`;
+      const opt = document.createElement("option");
+      opt.value = i;
+      opt.textContent = title;
+      chapterSelect.appendChild(opt);
+    });
+  }
+
+  function renderChapter() {
+    chapterContent.textContent = chapters[currentIndex];
+    chapterSelect.value = currentIndex;
+    window.scrollTo(0, 0);
+  }
+
+  function prevChapter() {
+    if (currentIndex > 0) {
+      currentIndex--;
+      renderChapter();
+    }
+  }
+
+  function nextChapter() {
+    if (currentIndex < chapters.length - 1) {
+      currentIndex++;
+      renderChapter();
+    }
+  }
+
+  function copyChapterText() {
+    if (!chapters.length) return;
+    navigator.clipboard.writeText(chapters[currentIndex]).then(() => {
+      showTooltip();
+    }).catch(() => {
+      alert("Copy failed. Try again.");
+    });
+  }
+
+  function showTooltip() {
+    copyTooltip.classList.add("show");
+    setTimeout(() => {
+      copyTooltip.classList.remove("show");
+    }, 1500);
+  }
+
+  // Initialize default styles on load
+  window.addEventListener("load", () => {
+    updateFontSize();
+    fontFamilySelect.dispatchEvent(new Event("change"));
+  });
+</script>
+
+</body>
+</html>

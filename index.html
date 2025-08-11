@@ -10,6 +10,8 @@
     --text-light: #333;
     --bg-dark: #121212;
     --text-dark: #eee;
+	--select-bg-dark: #333;
+	--select-text-dark: #eee;
   }
 
   body {
@@ -36,7 +38,6 @@
     flex-wrap: wrap;
     gap: 10px;
     align-items: center;
-    justify-content: center;
     z-index: 10;
     transition: background-color 0.3s ease, color 0.3s ease;
   }
@@ -52,15 +53,23 @@
   #controls label {
     font-size: 16px;
     padding: 8px;
-    flex: 1 1 auto;
-    min-width: 120px;
-    max-width: 200px;
     background: inherit;
     border: 1px solid #ccc;
     border-radius: 4px;
     color: inherit;
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
     cursor: pointer;
+  }
+  
+  body.dark #controls select {
+    background-color: var(--select-bg-dark);
+    color: var(--select-text-dark);
+  }
+  
+  /* Style the dropdown options in dark mode */
+  body.dark #controls select option {
+    background: var(--select-bg-dark);
+    color: var(--select-text-dark);
   }
 
   body.dark #controls input[type=file],
@@ -74,7 +83,6 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    flex: 0 1 auto;
   }
 
   #textSizeWrapper button {
@@ -110,7 +118,6 @@
     color: var(--text-dark);
   }
 
-  /* Floating clipboard button styles */
   #copyBtn {
     position: fixed;
     bottom: 25px;
@@ -134,7 +141,6 @@
     background: #0056b3;
   }
 
-  /* Tooltip message */
   #copyTooltip {
     position: fixed;
     bottom: 85px;
@@ -154,7 +160,6 @@
     pointer-events: auto;
   }
 
-  /* Dark mode toggle button */
   #modeToggleBtn {
     display: flex;
     align-items: center;
@@ -189,43 +194,119 @@
     display: block;
   }
 
+  #appearanceControls {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    border-top: 1px solid #ccc;
+    transition: all 0.3s ease;
+    max-height: 100px;
+    overflow: hidden;
+  }
+
+  #appearanceControls.collapsed {
+    max-height: 0;
+    padding: 0;
+    border-top: none;
+    opacity: 0;
+  }
+
+  /* Desktop Layout */
+  #fileInput {
+    min-width: 120px;
+    max-width: 300px;
+    margin-right: auto;
+  }
+
+  #nav-center {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex: 1;
+  }
+
+  #chapterSelect {
+    min-width: 300px;
+    max-width: 350px;
+  }
+
+  #prevBtn, #nextBtn {
+    min-width: 100px;
+    max-width: 120px;
+  }
+
+  #toggleAppearanceBtn {
+    width: 180px;
+    padding: 8px;
+    background: inherit;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    color: inherit;
+    cursor: pointer;
+    text-align: center;
+    margin-left: auto;
+  }
+
+  body.dark #toggleAppearanceBtn {
+    border-color: #666;
+  }
+
+  /* Mobile Layout */
   @media (max-width: 600px) {
-    #chapter-content {
-      padding: 12px;
-      font-size: 0.95rem;
-    }
-    
     #controls {
-      gap: 8px;
-      justify-content: flex-start;
-      padding: 8px;
+      flex-direction: column;
+      gap: 10px;
+      padding: 10px;
     }
-    
-    #controls > * {
-      flex: 1 1 40%;
+
+    #fileInput, #chapterSelect {
+      width: 100%;
+      max-width: none;
+      box-sizing: border-box;
+    }
+
+    #fileInput {
+      margin-right: 0;
+    }
+
+    #nav-center {
+      width: 100%;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 10px;
+      width: 100%;
+    }
+
+    #prevBtn, #nextBtn {
+      flex: 1;
+      width: 100%;
       max-width: none;
     }
-    
+
+    #toggleAppearanceBtn {
+      width: 100%;
+      max-width: 180px;
+      margin: 10px auto 0 auto;
+    }
+
+    #appearanceControls {
+      flex-direction: column;
+    }
+
+    #appearanceControls > * {
+      width: 100%;
+    }
+
     #textSizeWrapper {
-      order: 1;
-      flex: 1 1 100%;
-      justify-content: center;
-      margin-top: 8px;
-      gap: 4px;
-    }
-    
-    #fontFamilySelect {
-      order: 2;
-      flex: 1 1 100%;
-    }
-    
-    #textSizeWrapper button {
-      padding: 6px 8px !important;
-      font-size: 14px !important;
-    }
-    
-    #textSizeDisplay {
-      font-size: 14px !important;
+      justify-content: space-between;
     }
   }
 </style>
@@ -235,32 +316,36 @@
 <div id="controls">
   <input type="file" id="fileInput" accept=".txt,.docx" />
   
-  <select id="chapterSelect" title="Select Chapter"></select>
-  
-  <button id="prevBtn" title="Previous Chapter">Previous</button>
-  <button id="nextBtn" title="Next Chapter">Next</button>
-
-  <!-- Moon/Sun toggle button -->
-  <button id="modeToggleBtn" title="Toggle Dark Mode">
-    <span class="sun">☀️</span>
-    <span class="moon">🌙</span>
-  </button>
-
-  <!-- Text size buttons -->
-  <div id="textSizeWrapper">
-    <button id="decreaseTextSize" type="button" aria-label="Decrease text size">A−</button>
-    <span id="textSizeDisplay" aria-live="polite">16px</span>
-    <button id="increaseTextSize" type="button" aria-label="Increase text size">A+</button>
+  <div id="nav-center">
+    <select id="chapterSelect" title="Select Chapter"></select>
+    <div class="nav-buttons">
+      <button id="prevBtn" title="Previous Chapter">Previous</button>
+      <button id="nextBtn" title="Next Chapter">Next</button>
+    </div>
   </div>
 
-  <!-- Font family selector -->
-  <select id="fontFamilySelect" title="Select Font Family">
-    <option value="Arial, sans-serif" selected>Arial</option>
-    <option value="Georgia, serif">Georgia</option>
-    <option value="'Courier New', monospace">Courier New</option>
-    <option value="'Times New Roman', serif">Times New Roman</option>
-    <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
-  </select>
+  <button id="toggleAppearanceBtn">Settings ▼</button>
+
+  <div id="appearanceControls" class="collapsed">
+    <button id="modeToggleBtn" title="Toggle Dark Mode">
+      <span class="sun">☀️</span>
+      <span class="moon">🌙</span>
+    </button>
+
+    <div id="textSizeWrapper">
+      <button id="decreaseTextSize" type="button" aria-label="Decrease text size">A−</button>
+      <span id="textSizeDisplay" aria-live="polite">16px</span>
+      <button id="increaseTextSize" type="button" aria-label="Increase text size">A+</button>
+    </div>
+
+    <select id="fontFamilySelect" title="Select Font Family">
+      <option value="Arial, sans-serif" selected>Arial</option>
+      <option value="Georgia, serif">Georgia</option>
+      <option value="'Courier New', monospace">Courier New</option>
+      <option value="'Times New Roman', serif">Times New Roman</option>
+      <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
+    </select>
+  </div>
 </div>
 
 <div id="chapter-content">
@@ -285,6 +370,8 @@
 
   const modeToggleBtn = document.getElementById("modeToggleBtn");
   const fontFamilySelect = document.getElementById("fontFamilySelect");
+  const toggleAppearanceBtn = document.getElementById("toggleAppearanceBtn");
+  const appearanceControls = document.getElementById("appearanceControls");
 
   const decreaseTextSizeBtn = document.getElementById("decreaseTextSize");
   const increaseTextSizeBtn = document.getElementById("increaseTextSize");
@@ -328,6 +415,13 @@
     }
   });
 
+  toggleAppearanceBtn.addEventListener("click", () => {
+    appearanceControls.classList.toggle("collapsed");
+    const isCollapsed = appearanceControls.classList.contains("collapsed");
+    toggleAppearanceBtn.textContent = isCollapsed ? 
+      'Settings ▼' : 'Settings ▲';
+  });
+
   function updateFontSize() {
     chapterContent.style.fontSize = currentFontSize + "px";
     textSizeDisplay.textContent = currentFontSize + "px";
@@ -356,32 +450,23 @@
     }
   }
 
-function processText(text) {
-    // First normalize all line endings
+  function processText(text) {
     text = text.replace(/\r\n/g, '\n');
-    
-    // Simple and reliable chapter pattern
     const chapterPattern = /^\s*(제\s*\d+\s*화|\d+\s*화|Chapter\s+\d+|Episode\s+\d+)(\s|\.|$)/gmi;
-    
-    // Find all chapter positions
     const chapterPositions = [];
     let match;
     while ((match = chapterPattern.exec(text)) !== null) {
-        // Verify it's at start of line
         if (match.index === 0 || text[match.index-1] === '\n') {
             chapterPositions.push(match.index);
         }
     }
 
-    // If we found chapters, split the text
     if (chapterPositions.length > 0) {
         chapters = [];
-        // Add content before first chapter as prologue if exists
         if (chapterPositions[0] > 0) {
             chapters.push(text.substring(0, chapterPositions[0]).trim());
         }
         
-        // Split the text at each chapter marker
         for (let i = 0; i < chapterPositions.length; i++) {
             const start = chapterPositions[i];
             const end = (i < chapterPositions.length - 1) ? chapterPositions[i + 1] : text.length;
@@ -390,38 +475,30 @@ function processText(text) {
                 chapters.push(chapterText);
             }
         }
-    } 
-    // If no chapters found, use the whole text as one chapter
-    else {
+    } else {
         chapters = [text];
     }
     
     populateDropdown();
     currentIndex = 0;
     renderChapter();
-}
+  }
 
-function populateDropdown() {
+  function populateDropdown() {
     chapterSelect.innerHTML = "";
     chapters.forEach((ch, i) => {
-        // Get first non-empty line
         const firstLine = ch.split('\n')[0].trim();
         let title = firstLine || `Chapter ${i + 1}`;
-        
-        // Clean up title
         title = title.trim();
-        
-        // Limit title length
         if (title.length > 50) {
             title = title.substring(0, 47) + '...';
         }
-        
         const opt = document.createElement("option");
         opt.value = i;
         opt.textContent = title;
         chapterSelect.appendChild(opt);
     });
-}
+  }
 
   function renderChapter() {
     chapterContent.textContent = chapters[currentIndex];
@@ -459,17 +536,14 @@ function populateDropdown() {
     }, 1500);
   }
 
-  // Initialize default styles on load
   window.addEventListener("load", () => {
     updateFontSize();
     fontFamilySelect.dispatchEvent(new Event("change"));
     
-    // Check for saved dark mode preference
     if (localStorage.getItem('darkMode') === 'true') {
       document.body.classList.add('dark');
     }
   });
 </script>
-
 </body>
 </html>

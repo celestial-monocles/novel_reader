@@ -356,75 +356,72 @@
     }
   }
 
-  function processText(text) {
+function processText(text) {
     // First normalize all line endings
     text = text.replace(/\r\n/g, '\n');
     
-    // Enhanced Korean chapter pattern that handles all cases
-    const koreanChapterPattern = /(^|\n)\s*(제\s*)?\d+\s*화(?=[\s\S])/g;
+    // Simple and reliable chapter pattern
+    const chapterPattern = /^\s*(제\s*\d+\s*화|\d+\s*화|Chapter\s+\d+|Episode\s+\d+)(\s|\.|$)/gmi;
     
     // Find all chapter positions
     const chapterPositions = [];
     let match;
-    while ((match = koreanChapterPattern.exec(text)) !== null) {
-      chapterPositions.push(match.index);
+    while ((match = chapterPattern.exec(text)) !== null) {
+        // Verify it's at start of line
+        if (match.index === 0 || text[match.index-1] === '\n') {
+            chapterPositions.push(match.index);
+        }
     }
 
     // If we found chapters, split the text
     if (chapterPositions.length > 0) {
-      chapters = [];
-      // Add content before first chapter as prologue if exists
-      if (chapterPositions[0] > 0) {
-        chapters.push(text.substring(0, chapterPositions[0]).trim());
-      }
-      
-      // Split the text at each chapter marker
-      for (let i = 0; i < chapterPositions.length; i++) {
-        const start = chapterPositions[i];
-        const end = (i < chapterPositions.length - 1) ? chapterPositions[i + 1] : text.length;
-        chapters.push(text.substring(start, end).trim());
-      }
+        chapters = [];
+        // Add content before first chapter as prologue if exists
+        if (chapterPositions[0] > 0) {
+            chapters.push(text.substring(0, chapterPositions[0]).trim());
+        }
+        
+        // Split the text at each chapter marker
+        for (let i = 0; i < chapterPositions.length; i++) {
+            const start = chapterPositions[i];
+            const end = (i < chapterPositions.length - 1) ? chapterPositions[i + 1] : text.length;
+            const chapterText = text.substring(start, end).trim();
+            if (chapterText) {
+                chapters.push(chapterText);
+            }
+        }
     } 
-    // Otherwise try English chapter markers
+    // If no chapters found, use the whole text as one chapter
     else {
-      chapters = text
-        .split(/(?=^\s*(Chapter|Episode)\s+\d+\b)/gim)
-        .map(t => t.trim())
-        .filter(t => t.length > 20);
-    }
-
-    // If still no chapters found, use the whole text as one chapter
-    if (chapters.length === 0) {
-      chapters = [text];
+        chapters = [text];
     }
     
     populateDropdown();
     currentIndex = 0;
     renderChapter();
-  }
+}
 
-  function populateDropdown() {
+function populateDropdown() {
     chapterSelect.innerHTML = "";
     chapters.forEach((ch, i) => {
-      // Try to find the Korean chapter marker
-      let title = `Chapter ${i + 1}`;
-      const koreanMatch = ch.match(/(제\s*)?\d+\s*화/);
-      if (koreanMatch) {
-        title = koreanMatch[0];
-      } else {
-        // Fallback to first non-empty line
-        const firstLine = ch.split('\n').find(line => line.trim().length > 0);
-        if (firstLine) {
-          title = firstLine.trim().substring(0, 50);
+        // Get first non-empty line
+        const firstLine = ch.split('\n')[0].trim();
+        let title = firstLine || `Chapter ${i + 1}`;
+        
+        // Clean up title
+        title = title.trim();
+        
+        // Limit title length
+        if (title.length > 50) {
+            title = title.substring(0, 47) + '...';
         }
-      }
-      
-      const opt = document.createElement("option");
-      opt.value = i;
-      opt.textContent = title;
-      chapterSelect.appendChild(opt);
+        
+        const opt = document.createElement("option");
+        opt.value = i;
+        opt.textContent = title;
+        chapterSelect.appendChild(opt);
     });
-  }
+}
 
   function renderChapter() {
     chapterContent.textContent = chapters[currentIndex];

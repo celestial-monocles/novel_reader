@@ -154,6 +154,41 @@
     pointer-events: auto;
   }
 
+  /* Dark mode toggle button */
+  #modeToggleBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: inherit;
+    transition: transform 0.3s ease;
+  }
+
+  #modeToggleBtn:hover {
+    transform: scale(1.1);
+  }
+
+  .dark #modeToggleBtn .sun {
+    display: none;
+  }
+
+  .dark #modeToggleBtn .moon {
+    display: block;
+  }
+
+  #modeToggleBtn .moon {
+    display: none;
+  }
+
+  #modeToggleBtn .sun {
+    display: block;
+  }
+
   @media (max-width: 600px) {
     #chapter-content {
       padding: 12px;
@@ -205,10 +240,11 @@
   <button id="prevBtn" title="Previous Chapter">Previous</button>
   <button id="nextBtn" title="Next Chapter">Next</button>
 
-  <!-- Dark/Light toggle -->
-  <label for="modeToggle" style="flex: 0 0 auto; cursor: pointer;">
-    <input type="checkbox" id="modeToggle" style="margin-right:6px;" /> Dark Mode
-  </label>
+  <!-- Moon/Sun toggle button -->
+  <button id="modeToggleBtn" title="Toggle Dark Mode">
+    <span class="sun">☀️</span>
+    <span class="moon">🌙</span>
+  </button>
 
   <!-- Text size buttons -->
   <div id="textSizeWrapper">
@@ -247,7 +283,7 @@
   const copyBtn = document.getElementById("copyBtn");
   const copyTooltip = document.getElementById("copyTooltip");
 
-  const modeToggle = document.getElementById("modeToggle");
+  const modeToggleBtn = document.getElementById("modeToggleBtn");
   const fontFamilySelect = document.getElementById("fontFamilySelect");
 
   const decreaseTextSizeBtn = document.getElementById("decreaseTextSize");
@@ -268,12 +304,10 @@
   });
   copyBtn.addEventListener("click", copyChapterText);
 
-  modeToggle.addEventListener("change", () => {
-    if (modeToggle.checked) {
-      document.body.classList.add("dark");
-    } else {
-      document.body.classList.remove("dark");
-    }
+  modeToggleBtn.addEventListener("click", () => {
+    document.body.classList.toggle("dark");
+    // Save preference to localStorage
+    localStorage.setItem('darkMode', document.body.classList.contains('dark'));
   });
 
   fontFamilySelect.addEventListener("change", () => {
@@ -387,6 +421,11 @@
   window.addEventListener("load", () => {
     updateFontSize();
     fontFamilySelect.dispatchEvent(new Event("change"));
+    
+    // Check for saved dark mode preference
+    if (localStorage.getItem('darkMode') === 'true') {
+      document.body.classList.add('dark');
+    }
   });
 </script>
 

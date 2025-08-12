@@ -217,8 +217,8 @@
 
   /* Desktop Layout */
   #fileInput {
-    min-width: 50px;
-    max-width: 200px;
+    min-width: 120px;
+    max-width: 300px;
     margin-right: auto;
   }
 
@@ -230,8 +230,8 @@
   }
 
   #chapterSelect {
-    min-width: 200px;
-    max-width: 300px;
+    min-width: 300px;
+    max-width: 350px;
   }
 
   #prevBtn, #nextBtn {
@@ -240,7 +240,7 @@
   }
 
   #toggleAppearanceBtn {
-    width: 100px;
+    width: 180px;
     padding: 8px;
     background: inherit;
     border: 1px solid #ccc;
@@ -254,13 +254,31 @@
   body.dark #toggleAppearanceBtn {
     border-color: #666;
   }
+  
+  #modeFontWrapper {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+  }
 
   /* Mobile Layout */
   @media (max-width: 600px) {
     #controls {
       flex-direction: column;
+	  align-items: stretch;
       gap: 10px;
       padding: 10px;
+    }
+	
+	#modeFontWrapper {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      width: 100%;
+    }
+	
+	#fontFamilySelect {
+      flex: 1;
     }
 
     #fileInput, #chapterSelect {
@@ -326,17 +344,12 @@
 
   <button id="toggleAppearanceBtn">Settings ▼</button>
 
-  <div id="appearanceControls" class="collapsed">
+<div id="appearanceControls" class="collapsed">
+  <div id="modeFontWrapper">
     <button id="modeToggleBtn" title="Toggle Dark Mode">
       <span class="sun">☀️</span>
       <span class="moon">🌙</span>
     </button>
-
-    <div id="textSizeWrapper">
-      <button id="decreaseTextSize" type="button" aria-label="Decrease text size">A−</button>
-      <span id="textSizeDisplay" aria-live="polite">16px</span>
-      <button id="increaseTextSize" type="button" aria-label="Increase text size">A+</button>
-    </div>
 
     <select id="fontFamilySelect" title="Select Font Family">
       <option value="Arial, sans-serif" selected>Arial</option>
@@ -346,6 +359,14 @@
       <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
     </select>
   </div>
+
+  <div id="textSizeWrapper">
+    <button id="decreaseTextSize" type="button" aria-label="Decrease text size">A−</button>
+    <span id="textSizeDisplay" aria-live="polite">16px</span>
+    <button id="increaseTextSize" type="button" aria-label="Increase text size">A+</button>
+  </div>
+</div>
+
 </div>
 
 <div id="chapter-content">

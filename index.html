@@ -4,14 +4,24 @@
 <meta charset="UTF-8" />
 <title>Novel Chapter Reader</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!-- Include Alpine.js -->
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<!-- Include Poppins and Nunito Sans fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;700&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg-light: #f4f4f4;
     --text-light: #333;
     --bg-dark: #121212;
     --text-dark: #eee;
-	--select-bg-dark: #333;
-	--select-text-dark: #eee;
+    --select-bg-dark: #333;
+    --select-text-dark: #eee;
+    --accent: #f0f0f0;
+    --accent-hover: #e0e0e0;
+    --btn: #e0e0e0;
+    --btn-hover: #d0d0d0;
+    --red: #ef4444;
+    --blue: #3b82f6;
   }
 
   body {
@@ -21,84 +31,16 @@
     margin: 0;
     padding: 0;
     transition: background-color 0.3s ease, color 0.3s ease;
+    padding-bottom: 80px; /* Add padding to prevent content being hidden behind nav */
   }
 
   body.dark {
     background: var(--bg-dark);
     color: var(--text-dark);
-  }
-
-  #controls {
-    background: #fff;
-    padding: 10px;
-    border-bottom: 1px solid #ccc;
-    position: sticky;
-    top: 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    align-items: center;
-    z-index: 10;
-    transition: background-color 0.3s ease, color 0.3s ease;
-  }
-
-  body.dark #controls {
-    background: #222;
-    border-color: #444;
-  }
-
-  #controls input[type=file],
-  #controls select,
-  #controls button,
-  #controls label {
-    font-size: 16px;
-    padding: 8px;
-    background: inherit;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    color: inherit;
-    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-    cursor: pointer;
-  }
-  
-  body.dark #controls select {
-    background-color: var(--select-bg-dark);
-    color: var(--select-text-dark);
-  }
-  
-  /* Style the dropdown options in dark mode */
-  body.dark #controls select option {
-    background: var(--select-bg-dark);
-    color: var(--select-text-dark);
-  }
-
-  body.dark #controls input[type=file],
-  body.dark #controls select,
-  body.dark #controls button,
-  body.dark #controls label {
-    border-color: #666;
-  }
-
-  #textSizeWrapper {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  #textSizeWrapper button {
-    padding: 6px 10px;
-    font-size: 16px;
-    cursor: pointer;
-    background: inherit;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    color: inherit;
-  }
-
-  #textSizeDisplay {
-    min-width: 35px;
-    text-align: center;
-    font-size: 16px;
+    --accent: #2d2d2d;
+    --accent-hover: #3d3d3d;
+    --btn: #3d3d3d;
+    --btn-hover: #4d4d4d;
   }
 
   #chapter-content {
@@ -111,6 +53,10 @@
     font-size: 1rem;
     min-height: 300px;
     transition: background-color 0.3s ease, color 0.3s ease, font-family 0.3s ease, font-size 0.3s ease;
+    margin-bottom: 20px; /* Extra space at bottom */
+	word-wrap: break-word;       
+    overflow-wrap: break-word;   
+    overflow-x: hidden;         
   }
 
   body.dark #chapter-content {
@@ -118,6 +64,248 @@
     color: var(--text-dark);
   }
 
+  /* Navigation Bar Styles */
+  .nav-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 100;
+    background: var(--accent);
+    padding: 10px 0;
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+  }
+
+  .nav-bar {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  /* Consistent button styles */
+  .nav-button, .file-upload-button, .mode-toggle-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    padding: 0;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--btn);
+    border: none;
+    margin: 0 2px;
+  }
+
+  .nav-button:hover, .file-upload-button:hover {
+    background-color: var(--btn-hover);
+  }
+
+  /* Dark mode toggle button */
+  .mode-toggle-btn {
+    background: transparent;
+  }
+
+  .mode-toggle-btn:hover {
+    transform: scale(1.1);
+    background: transparent;
+  }
+
+  /* Dropdown styles */
+  .dropdown {
+    position: fixed;
+    bottom: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--accent);
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    width: 90%;
+    max-width: 400px;
+    max-height: 60vh;
+    overflow-y: auto;
+    z-index: 101;
+  }
+
+  .dropdown-header {
+    padding: 10px;
+    font-weight: bold;
+    border-bottom: 1px solid var(--btn);
+    text-align: center;
+  }
+
+  .dropdown-item {
+    padding: 8px 15px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  .dropdown-item:hover {
+    background-color: var(--accent-hover);
+  }
+
+  /* Desktop styles */
+  @media (min-width: 768px) {
+    .nav-container {
+      top: 20px;
+      bottom: auto;
+      left: auto;
+      right: 20px;
+      width: auto;
+      background: transparent;
+      padding: 0;
+      box-shadow: none;
+    }
+    
+    .nav-bar {
+      flex-direction: column;
+      width: 50px;
+      background: var(--accent);
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .dropdown {
+      bottom: auto;
+      right: 60px;
+      top: 0;
+      left: auto;
+      transform: none;
+      width: 300px;
+    }
+
+    body {
+      padding-bottom: 0;
+    }
+  }
+
+  .mode-icon {
+    width: 24px;
+    height: 24px;
+    transition: opacity 0.3s ease;
+  }
+
+  .sun-icon {
+    opacity: 1;
+  }
+
+  .dark .sun-icon {
+    opacity: 0;
+  }
+
+  .moon-icon {
+    opacity: 0;
+    position: absolute;
+  }
+
+  .dark .moon-icon {
+    opacity: 1;
+  }
+
+  /* Settings panel styles */
+  .settings-panel {
+    padding: 15px;
+  }
+
+  .settings-row {
+    margin-bottom: 15px;
+  }
+
+  .settings-label {
+    display: block;
+    margin-bottom: 5px;
+  }
+
+  .settings-range {
+    width: 100%;
+  }
+
+  .settings-number {
+    width: 50px;
+    margin-left: 10px;
+  }
+
+  .font-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 10px;
+  }
+
+  .font-button {
+    padding: 5px 10px;
+    border-radius: 4px;
+    background: var(--btn);
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    color: var(--text-light);
+  }
+
+  body.dark .font-button {
+    color: var(--text-dark);
+  }
+
+  .font-button:hover {
+    background: var(--btn-hover);
+  }
+
+  .font-button.active {
+    background: var(--blue);
+    color: white;
+  }
+
+  .reset-button {
+    padding: 8px 15px;
+    background: var(--btn);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-top: 10px;
+    color: var(--text-light);
+  }
+
+  body.dark .reset-button {
+    color: var(--text-dark);
+  }
+
+  .reset-button:hover {
+    background: var(--btn-hover);
+  }
+
+  /* File upload button */
+  .file-upload-button {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .file-upload-input {
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+  }
+
+  /* SVG icon styles - ALL white in dark mode */
+  .nav-svg-icon, .mode-icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  body.dark .nav-svg-icon,
+  body.dark .mode-icon,
+  body.dark svg {
+    color: white !important;
+  }
+
+  /* Copy button styles */
   #copyBtn {
     position: fixed;
     bottom: 25px;
@@ -137,6 +325,7 @@
     z-index: 1000;
     transition: background-color 0.3s ease;
   }
+  
   #copyBtn:hover {
     background: #0056b3;
   }
@@ -155,218 +344,134 @@
     transition: opacity 0.3s ease;
     z-index: 1001;
   }
+  
   #copyTooltip.show {
     opacity: 1;
     pointer-events: auto;
   }
 
-  #modeToggleBtn {
+  /* Flex utility class */
+  .flex {
     display: flex;
     align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    font-size: 20px;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    color: inherit;
-    transition: transform 0.3s ease;
-  }
-
-  #modeToggleBtn:hover {
-    transform: scale(1.1);
-  }
-
-  .dark #modeToggleBtn .sun {
-    display: none;
-  }
-
-  .dark #modeToggleBtn .moon {
-    display: block;
-  }
-
-  #modeToggleBtn .moon {
-    display: none;
-  }
-
-  #modeToggleBtn .sun {
-    display: block;
-  }
-
-  #appearanceControls {
-    width: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 0;
-    border-top: 1px solid #ccc;
-    transition: all 0.3s ease;
-    max-height: 100px;
-    overflow: hidden;
-  }
-
-  #appearanceControls.collapsed {
-    max-height: 0;
-    padding: 0;
-    border-top: none;
-    opacity: 0;
-  }
-
-  /* Desktop Layout */
-  #fileInput {
-    min-width: 120px;
-    max-width: 300px;
-    margin-right: auto;
-  }
-
-  #nav-center {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    flex: 1;
-  }
-
-  #chapterSelect {
-    min-width: 300px;
-    max-width: 350px;
-  }
-
-  #prevBtn, #nextBtn {
-    min-width: 100px;
-    max-width: 120px;
-  }
-
-  #toggleAppearanceBtn {
-    width: 180px;
-    padding: 8px;
-    background: inherit;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    color: inherit;
-    cursor: pointer;
-    text-align: center;
-    margin-left: auto;
-  }
-
-  body.dark #toggleAppearanceBtn {
-    border-color: #666;
-  }
-  
-  #modeFontWrapper {
-	display: flex;
-	align-items: center;
-	gap: 10px;
-  }
-
-  /* Mobile Layout */
-  @media (max-width: 600px) {
-    #controls {
-      flex-direction: column;
-	  align-items: stretch;
-      gap: 10px;
-      padding: 10px;
-    }
-	
-	#modeFontWrapper {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      width: 100%;
-    }
-	
-	#fontFamilySelect {
-      flex: 1;
-    }
-
-    #fileInput, #chapterSelect {
-      width: 100%;
-      max-width: none;
-      box-sizing: border-box;
-    }
-
-    #fileInput {
-      margin-right: 0;
-    }
-
-    #nav-center {
-      width: 100%;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .nav-buttons {
-      display: flex;
-      gap: 10px;
-      width: 100%;
-    }
-
-    #prevBtn, #nextBtn {
-      flex: 1;
-      width: 100%;
-      max-width: none;
-    }
-
-    #toggleAppearanceBtn {
-      width: 100%;
-      max-width: 180px;
-      margin: 10px auto 0 auto;
-    }
-
-    #appearanceControls {
-      flex-direction: column;
-    }
-
-    #appearanceControls > * {
-      width: 100%;
-    }
-
-    #textSizeWrapper {
-      justify-content: space-between;
-    }
   }
 </style>
 </head>
 <body>
 
-<div id="controls">
-  <input type="file" id="fileInput" accept=".txt,.docx" />
+<!-- Navigation Bar -->
+<div class="nav-container" x-data="{ open: false, tocOpen: false, fontsOpen: false }">
+  <div class="nav-bar">
   
-  <div id="nav-center">
-    <select id="chapterSelect" title="Select Chapter"></select>
-    <div class="nav-buttons">
-      <button id="prevBtn" title="Previous Chapter">Previous</button>
-      <button id="nextBtn" title="Next Chapter">Next</button>
+	<!-- File Upload Button -->
+    <div class="file-upload-button">
+      <svg class="nav-svg-icon" viewBox="0 0 24 24" xmlns='http://www.w3.org/2000/svg'>
+        <rect width='24' height='24' stroke='none' fill='#000000' opacity='0'/>
+        <g transform="matrix(1 0 0 1 12 12)">
+          <path style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: currentColor; fill-rule: nonzero; opacity: 1;" transform=" translate(-12, -12)" d="M 14 2 L 6 2 C 4.9 2 4 2.9 4 4 L 4 20 C 4 21.1 4.9 22 6 22 L 18 22 C 19.1 22 20 21.1 20 20 L 20 8 L 14 2 z M 18.5 9 L 13 9 L 13 3.5 L 18.5 9 z" stroke-linecap="round" />
+        </g>
+      </svg>
+      <input type="file" id="fileInput" class="file-upload-input" accept=".txt,.docx">
+    </div>
+	
+    <button class="nav-button" @click="tocOpen = !tocOpen">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="24" height="24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3">
+        <path d="M4 8 L24 8 M4 16 L28 16 M4 24 L28 24"></path>
+      </svg>
+    </button>
+    
+    <button class="nav-button" @click="fontsOpen = !fontsOpen">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="24" height="24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3">
+        <path d="M13 2 L13 6 11 7 8 4 4 8 7 11 6 13 2 13 2 19 6 19 7 21 4 24 8 28 11 25 13 26 13 30 19 30 19 26 21 25 24 28 28 24 25 21 26 19 30 19 30 13 26 13 25 11 28 8 24 4 21 7 19 6 19 2 Z"></path>
+        <circle cx="16" cy="16" r="4"></circle>
+      </svg>
+    </button>
+    
+    <!-- Dark mode toggle button -->
+    <button class="mode-toggle-btn" id="modeToggleBtn">
+      <svg class="mode-icon sun-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path fill="currentColor" d="M12,18c-3.3,0-6-2.7-6-6s2.7-6,6-6s6,2.7,6,6S15.3,18,12,18zM12,8c-2.2,0-4,1.8-4,4s1.8,4,4,4s4-1.8,4-4S14.2,8,12,8z"/>
+        <path fill="currentColor" d="M12,4c-0.6,0-1-0.4-1-1V1c0-0.6,0.4-1,1-1s1,0.4,1,1v2C13,3.6,12.6,4,12,4z"/>
+        <path fill="currentColor" d="M12,20c-0.6,0-1-0.4-1-1v-2c0-0.6,0.4-1,1-1s1,0.4,1,1v2C13,19.6,12.6,20,12,20z"/>
+        <path fill="currentColor" d="M5.6,6.6c-0.3,0-0.5-0.1-0.7-0.3L3.5,4.9c-0.4-0.4-0.4-1,0-1.4s1-0.4,1.4,0l1.4,1.4c0.4,0.4,0.4,1,0,1.4C6.1,6.5,5.9,6.6,5.6,6.6z"/>
+        <path fill="currentColor" d="M19.8,16.8c-0.3,0-0.5-0.1-0.7-0.3l-1.4-1.4c-0.4-0.4-0.4-1,0-1.4s1-0.4,1.4,0l1.4,1.4c0.4,0.4,0.4,1,0,1.4C20.3,16.7,20.1,16.8,19.8,16.8z"/>
+        <path fill="currentColor" d="M3,13H1c-0.6,0-1-0.4-1-1s0.4-1,1-1h2c0.6,0,1,0.4,1,1S3.6,13,3,13z"/>
+        <path fill="currentColor" d="M23,13h-2c-0.6,0-1-0.4-1-1s0.4-1,1-1h2c0.6,0,1,0.4,1,1S23.6,13,23,13z"/>
+        <path fill="currentColor" d="M4.2,16.8c-0.3,0-0.5-0.1-0.7-0.3c-0.4-0.4-0.4-1,0-1.4l1.4-1.4c0.4-0.4,1-0.4,1.4,0s0.4,1,0,1.4l-1.4,1.4C4.7,16.7,4.5,16.8,4.2,16.8z"/>
+        <path fill="currentColor" d="M18.4,6.6c-0.3,0-0.5-0.1-0.7-0.3c-0.4-0.4-0.4-1,0-1.4l1.4-1.4c0.4-0.4,1-0.4,1.4,0s0.4,1,0,1.4l-1.4,1.4C18.9,6.5,18.7,6.6,18.4,6.6z"/>
+      </svg>
+      <svg class="mode-icon moon-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path fill="currentColor" d="M12.1,22c-0.3,0-0.6,0-0.9,0c-5.5-0.5-9.5-5.4-9-10.9c0.4-4.8,4.2-8.6,9-9c0.4,0,0.8,0.2,1,0.5c0.2,0.3,0.2,0.8-0.1,1.1c-2,2.7-1.4,6.4,1.3,8.4c2.1,1.6,5,1.6,7.1,0c0.3-0.2,0.7-0.3,1.1-0.1c0.3,0.2,0.5,0.6,0.5,1c-0.2,2.7-1.5,5.1-3.6,6.8C16.6,21.2,14.4,22,12.1,22zM9.3,4.4c-2.9,1-5,3.6-5.2,6.8c-0.4,4.4,2.8,8.3,7.2,8.7c2.1,0.2,4.2-0.4,5.8-1.8c1.1-0.9,1.9-2.1,2.4-3.4c-2.5,0.9-5.3,0.5-7.5-1.1C9.2,11.4,8.1,7.7,9.3,4.4z"/>
+      </svg>
+    </button>
+    
+    <!-- Copy Button -->
+    <button class="nav-button" @click="copyChapterText()">
+      <svg class="nav-svg-icon" viewBox="0 0 24 24" xmlns='http://www.w3.org/2000/svg'>
+        <rect width='24' height='24' stroke='none' fill='#000000' opacity='0'/>
+        <g transform="matrix(1.54 0 0 1.54 12 12)">
+          <path style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: currentColor; fill-rule: nonzero; opacity: 1;" transform=" translate(-7.5, -7.5)" d="M 7.5 1 C 6.851563 1 6.300781 1.421875 6.09375 2 L 3.5 2 C 2.675781 2 2 2.675781 2 3.5 L 2 12.5 C 2 13.324219 2.675781 14 3.5 14 L 11.5 14 C 12.324219 14 13 13.324219 13 12.5 L 13 3.5 C 13 2.675781 12.324219 2 11.5 2 L 8.90625 2 C 8.699219 1.421875 8.148438 1 7.5 1 Z M 7.5 2 C 7.78125 2 8 2.21875 8 2.5 L 8 3 L 9 3 L 9 4 L 6 4 L 6 3 L 7 3 L 7 2.5 C 7 2.21875 7.21875 2 7.5 2 Z M 3.5 3 L 5 3 L 5 5 L 10 5 L 10 3 L 11.5 3 C 11.78125 3 12 3.21875 12 3.5 L 12 12.5 C 12 12.78125 11.78125 13 11.5 13 L 3.5 13 C 3.21875 13 3 12.78125 3 12.5 L 3 3.5 C 3 3.21875 3.21875 3 3.5 3 Z" stroke-linecap="round" />
+        </g>
+      </svg>
+    </button>
+    
+    <button class="nav-button" @click="prevChapter()">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="24" height="24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3">
+        <path d="M10 6 L4 16 10 26 M2 16 L30 16"></path>
+      </svg>
+    </button>
+    
+    <button class="nav-button" @click="nextChapter()">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="24" height="24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3">
+        <path d="M22 6 L30 16 22 26 M30 16 L4 16"></path>
+      </svg>
+    </button>
+  </div>
+  
+  <!-- Table of Contents Dropdown -->
+  <div class="dropdown" x-show="tocOpen" @click.outside="tocOpen = false" x-transition>
+    <div class="dropdown-header">Table of Contents</div>
+    <div id="chapterDropdown">
+      <!-- Chapters will be populated here by JavaScript -->
     </div>
   </div>
-
-  <button id="toggleAppearanceBtn">Settings ▼</button>
-
-<div id="appearanceControls" class="collapsed">
-  <div id="modeFontWrapper">
-    <button id="modeToggleBtn" title="Toggle Dark Mode">
-      <span class="sun">☀️</span>
-      <span class="moon">🌙</span>
-    </button>
-
-    <select id="fontFamilySelect" title="Select Font Family">
-      <option value="Arial, sans-serif" selected>Arial</option>
-      <option value="Georgia, serif">Georgia</option>
-      <option value="'Courier New', monospace">Courier New</option>
-      <option value="'Times New Roman', serif">Times New Roman</option>
-      <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
-    </select>
+  
+  <!-- Font Settings Dropdown -->
+  <div class="dropdown" x-show="fontsOpen" @click.outside="fontsOpen = false" x-transition>
+    <div class="dropdown-header">Reader Settings</div>
+    <div class="settings-panel">
+      <div class="settings-row">
+        <label class="settings-label">Font Size</label>
+        <div class="flex">
+          <input type="range" id="fontSizeRange" min="12" max="36" value="16" class="settings-range">
+          <input type="number" id="fontSizeInput" min="12" max="36" value="16" class="settings-number">
+        </div>
+      </div>
+      
+      <div class="settings-row">
+        <label class="settings-label">Line Height</label>
+        <div class="flex">
+          <input type="range" id="lineHeightRange" min="0.9" max="2" step="0.1" value="1.6" class="settings-range">
+          <input type="number" id="lineHeightInput" min="0.9" max="2" step="0.1" value="1.6" class="settings-number">
+        </div>
+      </div>
+      
+      <div class="settings-row">
+        <label class="settings-label">Font Family</label>
+        <div class="font-buttons">
+          <button class="font-button" data-font="Arial, sans-serif">Arial</button>
+          <button class="font-button" data-font="Georgia, serif">Georgia</button>
+          <button class="font-button" data-font="'Courier New', monospace">Courier New</button>
+          <button class="font-button" data-font="'Times New Roman', serif">Times New Roman</button>
+          <button class="font-button" data-font="'Trebuchet MS', sans-serif">Trebuchet MS</button>
+          <button class="font-button" data-font="Poppins, sans-serif">Poppins</button>
+          <button class="font-button" data-font="Nunito Sans, sans-serif">Nunito Sans</button>
+        </div>
+      </div>
+      
+      <button class="reset-button" id="resetSettings">Reset Settings</button>
+    </div>
   </div>
-
-  <div id="textSizeWrapper">
-    <button id="decreaseTextSize" type="button" aria-label="Decrease text size">A−</button>
-    <span id="textSizeDisplay" aria-live="polite">16px</span>
-    <button id="increaseTextSize" type="button" aria-label="Increase text size">A+</button>
-  </div>
-</div>
-
 </div>
 
 <div id="chapter-content">
@@ -375,79 +480,80 @@
   <em>The tool automatically detects chapters (like "Chapter/Episode 1" or "1화") and organizes them in the dropdown menu. Navigate between chapters using the Previous/Next buttons or the dropdown.</em>
 </div>
 
-<button id="copyBtn" title="Copy chapter text">📋</button>
-<div id="copyTooltip">Copied!</div>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js"></script>
 <script>
   let chapters = [];
   let currentIndex = 0;
 
-  const fileInput = document.getElementById("fileInput");
-  const prevBtn = document.getElementById("prevBtn");
-  const nextBtn = document.getElementById("nextBtn");
-  const chapterSelect = document.getElementById("chapterSelect");
   const chapterContent = document.getElementById("chapter-content");
   const copyBtn = document.getElementById("copyBtn");
   const copyTooltip = document.getElementById("copyTooltip");
-
   const modeToggleBtn = document.getElementById("modeToggleBtn");
-  const fontFamilySelect = document.getElementById("fontFamilySelect");
-  const toggleAppearanceBtn = document.getElementById("toggleAppearanceBtn");
-  const appearanceControls = document.getElementById("appearanceControls");
+  const chapterDropdown = document.getElementById("chapterDropdown");
+  const fileInput = document.getElementById("fileInput");
 
-  const decreaseTextSizeBtn = document.getElementById("decreaseTextSize");
-  const increaseTextSizeBtn = document.getElementById("increaseTextSize");
-  const textSizeDisplay = document.getElementById("textSizeDisplay");
+  // Font settings elements
+  const fontSizeRange = document.getElementById("fontSizeRange");
+  const fontSizeInput = document.getElementById("fontSizeInput");
+  const lineHeightRange = document.getElementById("lineHeightRange");
+  const lineHeightInput = document.getElementById("lineHeightInput");
+  const fontButtons = document.querySelectorAll(".font-button");
+  const resetSettingsBtn = document.getElementById("resetSettings");
 
-  // Initial font size in pixels
-  let currentFontSize = 16;
-  const minFontSize = 12;
-  const maxFontSize = 36;
-
+  // Event listeners
   fileInput.addEventListener("change", handleFile);
-  prevBtn.addEventListener("click", prevChapter);
-  nextBtn.addEventListener("click", nextChapter);
-  chapterSelect.addEventListener("change", (e) => {
-    currentIndex = parseInt(e.target.value, 10);
-    renderChapter();
-  });
-  copyBtn.addEventListener("click", copyChapterText);
+  modeToggleBtn.addEventListener("click", toggleDarkMode);
 
-  modeToggleBtn.addEventListener("click", () => {
-    document.body.classList.toggle("dark");
-    // Save preference to localStorage
-    localStorage.setItem('darkMode', document.body.classList.contains('dark'));
+  // Font settings event listeners
+  fontSizeRange.addEventListener("input", () => {
+    fontSizeInput.value = fontSizeRange.value;
+    updateFontSize();
   });
 
-  fontFamilySelect.addEventListener("change", () => {
-    chapterContent.style.fontFamily = fontFamilySelect.value;
+  fontSizeInput.addEventListener("input", () => {
+    fontSizeRange.value = fontSizeInput.value;
+    updateFontSize();
   });
 
-  decreaseTextSizeBtn.addEventListener("click", () => {
-    if (currentFontSize > minFontSize) {
-      currentFontSize--;
-      updateFontSize();
+  lineHeightRange.addEventListener("input", () => {
+    lineHeightInput.value = lineHeightRange.value;
+    updateLineHeight();
+  });
+
+  lineHeightInput.addEventListener("input", () => {
+    lineHeightRange.value = lineHeightInput.value;
+    updateLineHeight();
+  });
+
+  fontButtons.forEach(button => {
+    button.addEventListener("click", () => {
+      const fontFamily = button.getAttribute("data-font");
+      chapterContent.style.fontFamily = fontFamily;
+      
+      // Update active state
+      fontButtons.forEach(btn => btn.classList.remove("active"));
+      button.classList.add("active");
+      
+      // Save to localStorage
+      localStorage.setItem('fontFamily', fontFamily);
+    });
+  });
+
+  resetSettingsBtn.addEventListener("click", resetSettings);
+
+  // Chapter navigation functions
+  function prevChapter() {
+    if (currentIndex > 0) {
+      currentIndex--;
+      renderChapter();
     }
-  });
+  }
 
-  increaseTextSizeBtn.addEventListener("click", () => {
-    if (currentFontSize < maxFontSize) {
-      currentFontSize++;
-      updateFontSize();
+  function nextChapter() {
+    if (currentIndex < chapters.length - 1) {
+      currentIndex++;
+      renderChapter();
     }
-  });
-
-  toggleAppearanceBtn.addEventListener("click", () => {
-    appearanceControls.classList.toggle("collapsed");
-    const isCollapsed = appearanceControls.classList.contains("collapsed");
-    toggleAppearanceBtn.textContent = isCollapsed ? 
-      'Settings ▼' : 'Settings ▲';
-  });
-
-  function updateFontSize() {
-    chapterContent.style.fontSize = currentFontSize + "px";
-    textSizeDisplay.textContent = currentFontSize + "px";
   }
 
   function handleFile(event) {
@@ -508,7 +614,7 @@
   }
 
   function populateDropdown() {
-    chapterSelect.innerHTML = "";
+    chapterDropdown.innerHTML = "";
     chapters.forEach((ch, i) => {
         const firstLine = ch.split('\n')[0].trim();
         let title = firstLine || `Chapter ${i + 1}`;
@@ -516,30 +622,22 @@
         if (title.length > 50) {
             title = title.substring(0, 47) + '...';
         }
-        const opt = document.createElement("option");
-        opt.value = i;
-        opt.textContent = title;
-        chapterSelect.appendChild(opt);
+        const item = document.createElement("div");
+        item.className = "dropdown-item";
+        item.textContent = title;
+        item.addEventListener("click", () => {
+          currentIndex = i;
+          renderChapter();
+          document.querySelector('.nav-container')._x_dataStack[0].tocOpen = false;
+        });
+        chapterDropdown.appendChild(item);
     });
   }
 
   function renderChapter() {
-    chapterContent.textContent = chapters[currentIndex];
-    chapterSelect.value = currentIndex;
-    window.scrollTo(0, 0);
-  }
-
-  function prevChapter() {
-    if (currentIndex > 0) {
-      currentIndex--;
-      renderChapter();
-    }
-  }
-
-  function nextChapter() {
-    if (currentIndex < chapters.length - 1) {
-      currentIndex++;
-      renderChapter();
+    if (chapters.length > 0 && currentIndex >= 0 && currentIndex < chapters.length) {
+      chapterContent.textContent = chapters[currentIndex];
+      window.scrollTo(0, 0);
     }
   }
 
@@ -553,18 +651,129 @@
   }
 
   function showTooltip() {
-    copyTooltip.classList.add("show");
+    const tooltip = document.createElement("div");
+    tooltip.id = "copyTooltip";
+    tooltip.textContent = "Copied!";
+    tooltip.style.position = "fixed";
+    tooltip.style.bottom = "85px";
+    tooltip.style.right = "35px";
+    tooltip.style.background = "#333";
+    tooltip.style.color = "#fff";
+    tooltip.style.padding = "6px 12px";
+    tooltip.style.borderRadius = "4px";
+    tooltip.style.fontSize = "14px";
+    tooltip.style.zIndex = "1001";
+    document.body.appendChild(tooltip);
+    
     setTimeout(() => {
-      copyTooltip.classList.remove("show");
-    }, 1500);
+      tooltip.style.opacity = "1";
+      setTimeout(() => {
+        tooltip.style.opacity = "0";
+        setTimeout(() => {
+          document.body.removeChild(tooltip);
+        }, 300);
+      }, 1500);
+    }, 10);
   }
 
-  window.addEventListener("load", () => {
-    updateFontSize();
-    fontFamilySelect.dispatchEvent(new Event("change"));
+  function toggleDarkMode() {
+    document.body.classList.toggle("dark");
+    // Save preference to localStorage
+    localStorage.setItem('darkMode', document.body.classList.contains('dark'));
     
+    // Update button state
+    updateModeButton();
+  }
+
+  function updateModeButton() {
+    const isDark = document.body.classList.contains('dark');
+    const sunIcon = document.querySelector('.sun-icon');
+    const moonIcon = document.querySelector('.moon-icon');
+    
+    if (isDark) {
+      sunIcon.style.opacity = '0';
+      moonIcon.style.opacity = '1';
+    } else {
+      sunIcon.style.opacity = '1';
+      moonIcon.style.opacity = '0';
+    }
+  }
+
+  function updateFontSize() {
+    const size = fontSizeInput.value + "px";
+    chapterContent.style.fontSize = size;
+    localStorage.setItem('fontSize', fontSizeInput.value);
+  }
+
+  function updateLineHeight() {
+    chapterContent.style.lineHeight = lineHeightInput.value;
+    localStorage.setItem('lineHeight', lineHeightInput.value);
+  }
+
+  function resetSettings() {
+    // Reset to default values
+    fontSizeInput.value = 16;
+    fontSizeRange.value = 16;
+    lineHeightInput.value = 1.6;
+    lineHeightRange.value = 1.6;
+    
+    // Update the UI
+    updateFontSize();
+    updateLineHeight();
+    
+    // Reset font family
+    const defaultFont = "Arial, sans-serif";
+    chapterContent.style.fontFamily = defaultFont;
+    fontButtons.forEach(btn => {
+      btn.classList.remove("active");
+      if (btn.getAttribute("data-font") === defaultFont) {
+        btn.classList.add("active");
+      }
+    });
+    
+    // Clear localStorage for settings
+    localStorage.removeItem('fontSize');
+    localStorage.removeItem('lineHeight');
+    localStorage.removeItem('fontFamily');
+  }
+
+  // Initialize from localStorage
+  window.addEventListener("load", () => {
+    // Dark mode
     if (localStorage.getItem('darkMode') === 'true') {
-      document.body.classList.add('dark');
+        document.body.classList.add('dark');
+    }
+    updateModeButton();
+    
+    // Font size
+    const savedFontSize = localStorage.getItem('fontSize');
+    if (savedFontSize) {
+      fontSizeInput.value = savedFontSize;
+      fontSizeRange.value = savedFontSize;
+      chapterContent.style.fontSize = savedFontSize + "px";
+    }
+    
+    // Line height
+    const savedLineHeight = localStorage.getItem('lineHeight');
+    if (savedLineHeight) {
+      lineHeightInput.value = savedLineHeight;
+      lineHeightRange.value = savedLineHeight;
+      chapterContent.style.lineHeight = savedLineHeight;
+    }
+    
+    // Font family
+    const savedFontFamily = localStorage.getItem('fontFamily');
+    if (savedFontFamily) {
+      chapterContent.style.fontFamily = savedFontFamily;
+      fontButtons.forEach(btn => {
+        btn.classList.remove("active");
+        if (btn.getAttribute("data-font") === savedFontFamily) {
+          btn.classList.add("active");
+        }
+      });
+    } else {
+      // Set default active font button
+      document.querySelector('.font-button[data-font="Arial, sans-serif"]').classList.add("active");
     }
   });
 </script>

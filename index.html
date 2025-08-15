@@ -23,7 +23,7 @@
     --red: #ef4444;
     --blue: #3b82f6;
   }
-  
+
   * {
     touch-action: manipulation;
   }
@@ -35,7 +35,7 @@
     margin: 0;
     padding: 0;
     transition: background-color 0.3s ease, color 0.3s ease;
-    padding-bottom: 80px; /* Add padding to prevent content being hidden behind nav */
+    padding-bottom: 80px;
   }
 
   body.dark {
@@ -57,8 +57,8 @@
     font-size: 1rem;
     min-height: 300px;
     transition: background-color 0.3s ease, color 0.3s ease, font-family 0.3s ease, font-size 0.3s ease;
-    margin-bottom: 20px; /* Extra space at bottom */
-	word-wrap: break-word;       
+    margin-bottom: 20px;
+    word-wrap: break-word;       
     overflow-wrap: break-word;   
     overflow-x: hidden;         
   }
@@ -78,6 +78,7 @@
     background: var(--accent);
     padding: 10px 0;
     box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+    display: block; /* Start visible */
   }
 
   .nav-bar {
@@ -298,9 +299,11 @@
   }
 
   /* SVG icon styles - ALL white in dark mode */
-  .nav-svg-icon, .mode-icon {
+  .nav-svg-icon, .mode-icon, svg {
     width: 24px;
     height: 24px;
+    color: black; /* Or your preferred light mode color */
+
   }
 
   body.dark .nav-svg-icon,
@@ -364,7 +367,7 @@
 <body>
 
 <!-- Navigation Bar -->
-<div class="nav-container" x-data="{ open: false, tocOpen: false, fontsOpen: false }">
+<div class="nav-container" x-data="{ open: false, tocOpen: false, fontsOpen: false }" id="navContainer">
   <div class="nav-bar">
   
 	<!-- File Upload Button -->
@@ -488,7 +491,18 @@
 <script>
   let chapters = [];
   let currentIndex = 0;
+  let navVisible = true;
+  const navContainer = document.getElementById("navContainer");
 
+  // Click anywhere to toggle nav, except when clicking on nav elements
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.nav-container') && !e.target.closest('.dropdown')) {
+      navVisible = !navVisible;
+      navContainer.style.display = navVisible ? 'block' : 'none';
+    }
+  });
+
+  // Rest of your existing JavaScript...
   const chapterContent = document.getElementById("chapter-content");
   const copyBtn = document.getElementById("copyBtn");
   const copyTooltip = document.getElementById("copyTooltip");
@@ -638,19 +652,12 @@
     });
   }
 
-	function renderChapter() {
-	  if (chapters.length > 0 && currentIndex >= 0 && currentIndex < chapters.length) {
-		// Replace newlines with <br> for proper formatting
-		const formatted = chapters[currentIndex]
-		  .split("\n")
-		  .map(line => line.trim() === "" ? "<br>" : line)
-		  .join("<br>");
-
-		chapterContent.innerHTML = formatted;
-		window.scrollTo(0, 0);
-	  }
-	}
-
+  function renderChapter() {
+    if (chapters.length > 0 && currentIndex >= 0 && currentIndex < chapters.length) {
+      chapterContent.textContent = chapters[currentIndex];
+      window.scrollTo(0, 0);
+    }
+  }
 
   function copyChapterText() {
     if (!chapters.length) return;

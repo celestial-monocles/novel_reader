@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <title>Novel Chapter Reader</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<meta name="google" content="notranslate">
 <!-- Include Alpine.js -->
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 <!-- Include Poppins and Nunito Sans fonts -->
@@ -52,7 +53,6 @@
     margin: auto;
     padding: 15px;
     background: #fff;
-    white-space: pre-wrap;
     line-height: 1.6;
     font-size: 1rem;
     min-height: 300px;
@@ -61,6 +61,10 @@
     word-wrap: break-word;       
     overflow-wrap: break-word;   
     overflow-x: hidden;         
+  }
+
+  #chapter-content p {
+    margin: 0 0 1em 0;
   }
 
   body.dark #chapter-content {
@@ -303,7 +307,6 @@
     width: 24px;
     height: 24px;
     color: black; /* Or your preferred light mode color */
-
   }
 
   body.dark .nav-svg-icon,
@@ -482,9 +485,10 @@
 </div>
 
 <div id="chapter-content">
-  <em>Load a .txt or .docx file to begin.</em>
-  <br>
-  <em>The tool automatically detects chapters (like "Chapter/Episode 1" or "1화") and organizes them in the dropdown menu. Navigate between chapters using the Previous/Next buttons or the dropdown.</em>
+  <article>
+    <p><em>Load a .txt or .docx file to begin.</em></p>
+    <p><em>The tool automatically detects chapters (like "Chapter/Episode 1" or "1화") and organizes them in the dropdown menu. Navigate between chapters using the Previous/Next buttons or the dropdown.</em></p>
+  </article>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js"></script>
@@ -502,7 +506,6 @@
     }
   });
 
-  // Rest of your existing JavaScript...
   const chapterContent = document.getElementById("chapter-content");
   const copyBtn = document.getElementById("copyBtn");
   const copyTooltip = document.getElementById("copyTooltip");
@@ -654,14 +657,34 @@
 
   function renderChapter() {
     if (chapters.length > 0 && currentIndex >= 0 && currentIndex < chapters.length) {
-      chapterContent.textContent = chapters[currentIndex];
+      // Convert the raw text to HTML with paragraphs
+      const content = convertToParagraphs(chapters[currentIndex]);
+      chapterContent.innerHTML = content;
       window.scrollTo(0, 0);
     }
   }
 
+  function convertToParagraphs(text) {
+    // Split by double newlines (paragraphs)
+    const paragraphs = text.split(/\n\s*\n/);
+    
+    // Wrap each paragraph in <p> tags and preserve single line breaks with <br>
+    return paragraphs.map(p => {
+      // Trim whitespace and replace single newlines with <br>
+      const lines = p.trim().split('\n');
+      return `<p>${lines.join('<br>')}</p>`;
+    }).join('');
+  }
+
   function copyChapterText() {
     if (!chapters.length) return;
-    navigator.clipboard.writeText(chapters[currentIndex]).then(() => {
+    
+    // Create temporary element to get text content without HTML tags
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = chapters[currentIndex];
+    const textToCopy = tempDiv.textContent;
+    
+    navigator.clipboard.writeText(textToCopy).then(() => {
       showTooltip();
     }).catch(() => {
       alert("Copy failed. Try again.");

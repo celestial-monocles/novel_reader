@@ -23,7 +23,7 @@
     --red: #ef4444;
     --blue: #3b82f6;
   }
-
+  
   * {
     touch-action: manipulation;
   }
@@ -638,12 +638,19 @@
     });
   }
 
-  function renderChapter() {
-    if (chapters.length > 0 && currentIndex >= 0 && currentIndex < chapters.length) {
-      chapterContent.textContent = chapters[currentIndex];
-      window.scrollTo(0, 0);
-    }
-  }
+	function renderChapter() {
+	  if (chapters.length > 0 && currentIndex >= 0 && currentIndex < chapters.length) {
+		// Replace newlines with <br> for proper formatting
+		const formatted = chapters[currentIndex]
+		  .split("\n")
+		  .map(line => line.trim() === "" ? "<br>" : line)
+		  .join("<br>");
+
+		chapterContent.innerHTML = formatted;
+		window.scrollTo(0, 0);
+	  }
+	}
+
 
   function copyChapterText() {
     if (!chapters.length) return;

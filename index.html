@@ -365,12 +365,31 @@
     display: flex;
     align-items: center;
   }
+
+  /* Find & Replace Status */
+  .find-replace-status {
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 4px;
+    background: var(--btn);
+    font-size: 14px;
+  }
+
+  .find-replace-status.active {
+    background: #d4edda;
+    color: #155724;
+  }
+
+  body.dark .find-replace-status.active {
+    background: #1e3a28;
+    color: #90ee90;
+  }
 </style>
 </head>
 <body>
 
 <!-- Navigation Bar -->
-<div class="nav-container" x-data="{ open: false, tocOpen: false, fontsOpen: false }" id="navContainer">
+<div class="nav-container" x-data="{ open: false, tocOpen: false, fontsOpen: false, findReplaceOpen: false }" id="navContainer">
   <div class="nav-bar">
   
 	<!-- File Upload Button -->
@@ -394,6 +413,13 @@
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="24" height="24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3">
         <path d="M13 2 L13 6 11 7 8 4 4 8 7 11 6 13 2 13 2 19 6 19 7 21 4 24 8 28 11 25 13 26 13 30 19 30 19 26 21 25 24 28 28 24 25 21 26 19 30 19 30 13 26 13 25 11 28 8 24 4 21 7 19 6 19 2 Z"></path>
         <circle cx="16" cy="16" r="4"></circle>
+      </svg>
+    </button>
+    
+    <!-- Find & Replace Button -->
+    <button class="nav-button" @click="findReplaceOpen = !findReplaceOpen">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="24" height="24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3">
+        <path d="M5 7 L13 7 13 15 5 15 Z M19 7 L27 7 27 15 19 15 Z M5 17 L13 17 13 25 5 25 Z M19 17 L27 17 27 25 19 25 Z"></path>
       </svg>
     </button>
     
@@ -482,6 +508,32 @@
       <button class="reset-button" id="resetSettings">Reset Settings</button>
     </div>
   </div>
+  
+  <!-- Find & Replace Dropdown -->
+  <div class="dropdown" x-show="findReplaceOpen" @click.outside="findReplaceOpen = false" x-transition>
+    <div class="dropdown-header">Find & Replace</div>
+    <div class="settings-panel">
+      <div class="settings-row">
+        <label class="settings-label">Upload Find & Replace JSON</label>
+        <div class="file-upload-button" style="width: 100%; height: auto; padding: 10px;">
+          <span>Choose JSON File</span>
+          <input type="file" id="findReplaceInput" class="file-upload-input" accept=".json">
+        </div>
+        <div id="findReplaceStatus" class="find-replace-status">
+          No find & replace rules loaded
+        </div>
+      </div>
+      
+      <div class="settings-row">
+        <label class="settings-label">Current Rules:</label>
+        <div id="currentRules" style="max-height: 200px; overflow-y: auto; margin-top: 10px; padding: 10px; background: var(--btn); border-radius: 4px; font-size: 12px;">
+          No rules loaded
+        </div>
+      </div>
+      
+      <button class="reset-button" id="clearFindReplace" style="margin-top: 10px;">Clear Find & Replace Rules</button>
+    </div>
+  </div>
 </div>
 
 <div id="chapter-content">
@@ -496,6 +548,7 @@
   let chapters = [];
   let currentIndex = 0;
   let navVisible = true;
+  let findReplaceRules = [];
   const navContainer = document.getElementById("navContainer");
 
   // Click anywhere to toggle nav, except when clicking on nav elements
@@ -512,6 +565,10 @@
   const modeToggleBtn = document.getElementById("modeToggleBtn");
   const chapterDropdown = document.getElementById("chapterDropdown");
   const fileInput = document.getElementById("fileInput");
+  const findReplaceInput = document.getElementById("findReplaceInput");
+  const findReplaceStatus = document.getElementById("findReplaceStatus");
+  const currentRules = document.getElementById("currentRules");
+  const clearFindReplaceBtn = document.getElementById("clearFindReplace");
 
   // Font settings elements
   const fontSizeRange = document.getElementById("fontSizeRange");
@@ -524,6 +581,8 @@
   // Event listeners
   fileInput.addEventListener("change", handleFile);
   modeToggleBtn.addEventListener("click", toggleDarkMode);
+  findReplaceInput.addEventListener("change", handleFindReplaceFile);
+  clearFindReplaceBtn.addEventListener("click", clearFindReplaceRules);
 
   // Font settings event listeners
   fontSizeRange.addEventListener("input", () => {
@@ -561,6 +620,103 @@
   });
 
   resetSettingsBtn.addEventListener("click", resetSettings);
+
+  // Find & Replace Functions
+  function handleFindReplaceFile(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const rules = JSON.parse(e.target.result);
+        
+        // Validate the JSON structure
+        if (Array.isArray(rules)) {
+          // Check if each rule has 'find' and 'replace' properties
+          const isValid = rules.every(rule => 
+            rule && typeof rule.find === 'string' && typeof rule.replace === 'string'
+          );
+          
+          if (isValid) {
+            findReplaceRules = rules;
+            updateFindReplaceStatus(true, `Loaded ${rules.length} find & replace rules`);
+            updateCurrentRulesDisplay();
+            
+            // Apply find & replace to current chapters if any are loaded
+            if (chapters.length > 0) {
+              applyFindReplaceToChapters();
+              renderChapter();
+            }
+          } else {
+            throw new Error('Invalid JSON structure. Each rule must have "find" and "replace" properties.');
+          }
+        } else {
+          throw new Error('JSON should be an array of find/replace rules.');
+        }
+      } catch (error) {
+        updateFindReplaceStatus(false, `Error loading JSON: ${error.message}`);
+        console.error('Error parsing find & replace JSON:', error);
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  function applyFindReplaceToChapters() {
+    if (findReplaceRules.length === 0) return;
+    
+    chapters = chapters.map(chapterText => {
+      let modifiedText = chapterText;
+      findReplaceRules.forEach(rule => {
+        // Use global regex replacement
+        const regex = new RegExp(escapeRegExp(rule.find), 'g');
+        modifiedText = modifiedText.replace(regex, rule.replace);
+      });
+      return modifiedText;
+    });
+  }
+
+  function escapeRegExp(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  function updateFindReplaceStatus(success, message) {
+    findReplaceStatus.textContent = message;
+    findReplaceStatus.className = 'find-replace-status';
+    if (success) {
+      findReplaceStatus.classList.add('active');
+    }
+  }
+
+  function updateCurrentRulesDisplay() {
+    if (findReplaceRules.length === 0) {
+      currentRules.textContent = 'No rules loaded';
+      return;
+    }
+    
+    const rulesHtml = findReplaceRules.map((rule, index) => 
+      `<div style="margin-bottom: 8px; padding: 5px; border-bottom: 1px solid rgba(0,0,0,0.1);">
+        <strong>Rule ${index + 1}:</strong><br>
+        <strong>Find:</strong> "${rule.find}"<br>
+        <strong>Replace:</strong> "${rule.replace}"
+      </div>`
+    ).join('');
+    
+    currentRules.innerHTML = rulesHtml;
+  }
+
+  function clearFindReplaceRules() {
+    findReplaceRules = [];
+    updateFindReplaceStatus(false, 'Find & replace rules cleared');
+    updateCurrentRulesDisplay();
+    
+    // Reload the original text if we have chapters loaded
+    if (chapters.length > 0) {
+      // We need to reprocess the original file, so we'll trigger a re-upload
+      // For now, we'll just show a message
+      alert('Find & replace rules cleared. Reload your text file to see original content.');
+    }
+  }
 
   // Chapter navigation functions
   function prevChapter() {
@@ -632,6 +788,11 @@
         }
     } else {
         chapters = [text];
+    }
+    
+    // Apply find & replace rules if any are loaded
+    if (findReplaceRules.length > 0) {
+      applyFindReplaceToChapters();
     }
     
     populateDropdown();

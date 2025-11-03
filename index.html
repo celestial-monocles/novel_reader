@@ -487,7 +487,7 @@
 <div id="chapter-content">
   <article>
     <p><em>Load a .txt or .docx file to begin.</em></p>
-    <p><em>The tool automatically detects chapters (like "Chapter/Episode 1" or "1화") and organizes them in the dropdown menu. Navigate between chapters using the Previous/Next buttons or the dropdown.</em></p>
+    <p><em>The tool automatically detects chapters (including Chinese patterns like "卷一", "章之一", etc.) and organizes them in the dropdown menu. Navigate between chapters using the Previous/Next buttons or the dropdown.</em></p>
   </article>
 </div>
 
@@ -602,7 +602,12 @@
 
   function processText(text) {
     text = text.replace(/\r\n/g, '\n');
-    const chapterPattern = /^\s*(외전\s*\d+\s*화|제\s*\d+\s*화|\d+\s*화|Chapter\s+\d+|Episode\s+\d+)(\s|\.|$)/gmi;
+    
+    // Enhanced chapter pattern to include Chinese chapter markers
+    const chapterPattern = /^\s*((?:외전\s*\d+\s*화|제\s*\d+\s*화|\d+\s*화|外传\s*\d+\s*话|第\s*\d+\s*话|\d+\s*话|Chapter\s+\d+|Episode\s+\d+|序章|終章|卷末|卷[一二三四五六七八九十百千零\d]+|章之[一二三四五六七八九十百千零\d]+|章[一二三四五六七八九十百千零\d]+|第[一二三四五六七八九十百千零\d]+章)(?:\s|\.|$))/gmi;
+	// If I want to add/remove lines with "◎" then add/remove this portion: |◎[^\n]+
+	// For example: 'Add' then line becomes this, 		/^\s*((?:외전\s*\d+\s*화|제\s*\d+\s*화|\d+\s*화|外传\s*\d+\s*话|第\s*\d+\s*话|\d+\s*话|Chapter\s+\d+|Episode\s+\d+|序章|終章|卷末|卷[一二三四五六七八九十百千零\d]+|章之[一二三四五六七八九十百千零\d]+|章[一二三四五六七八九十百千零\d]+|第[一二三四五六七八九十百千零\d]+章|◎[^\n]+)(?:\s|\.|$))/gmi;
+    
     const chapterPositions = [];
     let match;
     while ((match = chapterPattern.exec(text)) !== null) {

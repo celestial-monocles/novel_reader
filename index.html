@@ -23,6 +23,7 @@
     --btn-hover: #d0d0d0;
     --red: #ef4444;
     --blue: #3b82f6;
+    --current-chapter: #3b82f6; /* New color for current chapter highlight */
   }
 
   * {
@@ -46,6 +47,7 @@
     --accent-hover: #3d3d3d;
     --btn: #3d3d3d;
     --btn-hover: #4d4d4d;
+    --current-chapter: #1e40af; /* Darker blue for dark mode */
   }
 
   #chapter-content {
@@ -155,6 +157,13 @@
 
   .dropdown-item:hover {
     background-color: var(--accent-hover);
+  }
+
+  /* NEW: Highlight current chapter in dropdown */
+  .dropdown-item.current-chapter {
+    background-color: var(--current-chapter);
+    color: white;
+    font-weight: bold;
   }
 
   /* Desktop styles */
@@ -725,6 +734,7 @@
     if (currentIndex > 0) {
       currentIndex--;
       renderChapter();
+      updateDropdownHighlight();
     }
   }
 
@@ -732,6 +742,7 @@
     if (currentIndex < chapters.length - 1) {
       currentIndex++;
       renderChapter();
+      updateDropdownHighlight();
     }
   }
 
@@ -800,6 +811,7 @@
     populateDropdown();
     currentIndex = 0;
     renderChapter();
+    updateDropdownHighlight();
   }
 
   function populateDropdown() {
@@ -817,9 +829,22 @@
         item.addEventListener("click", () => {
           currentIndex = i;
           renderChapter();
+          updateDropdownHighlight();
           document.querySelector('.nav-container')._x_dataStack[0].tocOpen = false;
         });
         chapterDropdown.appendChild(item);
+    });
+  }
+
+  // NEW: Function to update the current chapter highlight in the dropdown
+  function updateDropdownHighlight() {
+    const dropdownItems = document.querySelectorAll('.dropdown-item');
+    dropdownItems.forEach((item, index) => {
+      if (index === currentIndex) {
+        item.classList.add('current-chapter');
+      } else {
+        item.classList.remove('current-chapter');
+      }
     });
   }
 

@@ -837,10 +837,24 @@
     const paragraphs = text.split(/\n\s*\n/);
     
     // Wrap each paragraph in <p> tags and preserve single line breaks with <br>
-    return paragraphs.map(p => {
+    return paragraphs.map((p, index) => {
       // Trim whitespace and replace single newlines with <br>
       const lines = p.trim().split('\n');
-      return `<p>${lines.join('<br>')}</p>`;
+      
+      // For the first paragraph of the chapter, make the first line bold
+      if (index === 0 && lines.length > 0) {
+        // Make the first line bold, keep the rest normal
+        const firstLine = `<strong>${lines[0]}</strong>`;
+        const remainingLines = lines.slice(1);
+        
+        if (remainingLines.length > 0) {
+          return `<p>${firstLine}<br>${remainingLines.join('<br>')}</p>`;
+        } else {
+          return `<p>${firstLine}</p>`;
+        }
+      } else {
+        return `<p>${lines.join('<br>')}</p>`;
+      }
     }).join('');
   }
 

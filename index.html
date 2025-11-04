@@ -113,14 +113,15 @@
     background-color: var(--btn-hover);
   }
 
-  /* Dark mode toggle button */
+  /* Dark mode toggle button - UPDATED to match other buttons */
   .mode-toggle-btn {
-    background: transparent;
+      background: var(--btn);
+      border: none;
   }
 
   .mode-toggle-btn:hover {
-    transform: scale(1.1);
-    background: transparent;
+      background-color: var(--btn-hover);
+      transform: none; /* Remove the scale transform */
   }
 
   /* Dropdown styles */

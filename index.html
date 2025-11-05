@@ -24,6 +24,7 @@
     --red: #ef4444;
     --blue: #3b82f6;
     --current-chapter: #3b82f6; /* New color for current chapter highlight */
+    --green: #10b981;
   }
 
   * {
@@ -38,6 +39,8 @@
     padding: 0;
     transition: background-color 0.3s ease, color 0.3s ease;
     padding-bottom: 80px;
+    /* Prevent pull-to-refresh on browsers that support it */
+    overscroll-behavior-y: contain;
   }
 
   body.dark {
@@ -398,9 +401,83 @@
     background: #1e3a28;
     color: #90ee90;
   }
+
+  /* NEW: Pull-to-refresh indicator */
+  .pull-to-refresh-indicator {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--accent);
+    transform: translateY(-100%);
+    transition: transform 0.3s ease;
+    z-index: 999;
+    font-weight: bold;
+  }
+
+  .pull-to-refresh-indicator.active {
+    transform: translateY(0);
+  }
+
+  /* NEW: Bookmark indicator */
+  .bookmark-indicator {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    background: var(--green);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .bookmark-indicator.show {
+    opacity: 1;
+  }
+
+  /* NEW: Status indicators */
+  .status-indicator {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background: var(--blue);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .status-indicator.show {
+    opacity: 1;
+  }
 </style>
 </head>
 <body>
+
+<!-- NEW: Pull-to-refresh indicator -->
+<div class="pull-to-refresh-indicator" id="pullToRefreshIndicator">
+  ↻ Release to refresh current chapter
+</div>
+
+<!-- NEW: Bookmark indicator -->
+<div class="bookmark-indicator" id="bookmarkIndicator">
+  ✓ Bookmarked
+</div>
+
+<!-- NEW: Status indicator -->
+<div class="status-indicator" id="statusIndicator">
+  ✓ Auto-saved
+</div>
 
 <!-- Navigation Bar -->
 <div class="nav-container" x-data="{ open: false, tocOpen: false, fontsOpen: false, findReplaceOpen: false }" id="navContainer">
@@ -564,7 +641,18 @@
   let currentIndex = 0;
   let navVisible = true;
   let findReplaceRules = [];
+  let currentFileData = null; // NEW: Store file data for caching
+  let autoSaveInterval = null; // NEW: Auto-save interval reference
+  
   const navContainer = document.getElementById("navContainer");
+  const pullToRefreshIndicator = document.getElementById("pullToRefreshIndicator");
+  const bookmarkIndicator = document.getElementById("bookmarkIndicator");
+  const statusIndicator = document.getElementById("statusIndicator");
+
+  // NEW: Pull-to-refresh variables
+  let startY = 0;
+  let currentY = 0;
+  let isRefreshing = false;
 
   // Click anywhere to toggle nav, except when clicking on nav elements
   document.addEventListener('click', function(e) {
@@ -592,6 +680,11 @@
   const lineHeightInput = document.getElementById("lineHeightInput");
   const fontButtons = document.querySelectorAll(".font-button");
   const resetSettingsBtn = document.getElementById("resetSettings");
+
+  // NEW: Pull-to-refresh event listeners
+  document.addEventListener('touchstart', handleTouchStart, { passive: false });
+  document.addEventListener('touchmove', handleTouchMove, { passive: false });
+  document.addEventListener('touchend', handleTouchEnd);
 
   // Event listeners
   fileInput.addEventListener("change", handleFile);
@@ -635,6 +728,185 @@
   });
 
   resetSettingsBtn.addEventListener("click", resetSettings);
+
+  // NEW: Pull-to-refresh functions
+  function handleTouchStart(e) {
+    if (window.scrollY === 0 && chapters.length > 0) {
+      startY = e.touches[0].clientY;
+      isRefreshing = true;
+    }
+  }
+
+  function handleTouchMove(e) {
+    if (!isRefreshing) return;
+    
+    currentY = e.touches[0].clientY;
+    const pullDistance = currentY - startY;
+    
+    if (pullDistance > 0) {
+      e.preventDefault();
+      const indicatorHeight = Math.min(pullDistance, 60);
+      pullToRefreshIndicator.style.transform = `translateY(${indicatorHeight - 60}px)`;
+      
+      if (pullDistance > 100) {
+        pullToRefreshIndicator.classList.add('active');
+      } else {
+        pullToRefreshIndicator.classList.remove('active');
+      }
+    }
+  }
+
+  function handleTouchEnd() {
+    if (!isRefreshing) return;
+    
+    const pullDistance = currentY - startY;
+    
+    if (pullDistance > 100) {
+      // Trigger refresh
+      pullToRefreshIndicator.textContent = "↻ Refreshing...";
+      setTimeout(() => {
+        renderChapter(); // Reload current chapter
+        pullToRefreshIndicator.textContent = "✓ Refreshed!";
+        setTimeout(() => {
+          pullToRefreshIndicator.classList.remove('active');
+          pullToRefreshIndicator.style.transform = 'translateY(-100%)';
+          pullToRefreshIndicator.textContent = "↻ Release to refresh current chapter";
+        }, 1000);
+      }, 500);
+    } else {
+      pullToRefreshIndicator.classList.remove('active');
+      pullToRefreshIndicator.style.transform = 'translateY(-100%)';
+    }
+    
+    isRefreshing = false;
+    startY = 0;
+    currentY = 0;
+  }
+
+  // NEW: Bookmarking functions
+  function saveBookmark() {
+    if (chapters.length === 0) return;
+    
+    const bookmark = {
+      fileData: currentFileData,
+      currentIndex: currentIndex,
+      timestamp: Date.now()
+    };
+    
+    localStorage.setItem('novelReaderBookmark', JSON.stringify(bookmark));
+    showBookmarkIndicator();
+  }
+
+  function loadBookmark() {
+    const bookmarkData = localStorage.getItem('novelReaderBookmark');
+    if (!bookmarkData) return false;
+    
+    try {
+      const bookmark = JSON.parse(bookmarkData);
+      
+      // Check if we have the same file loaded (basic check)
+      if (currentFileData && bookmark.fileData) {
+        // For simplicity, we'll assume it's the same file if the user hasn't loaded a new one
+        currentIndex = bookmark.currentIndex;
+        renderChapter();
+        updateDropdownHighlight();
+        showStatusIndicator('Bookmark restored');
+        return true;
+      }
+    } catch (e) {
+      console.error('Error loading bookmark:', e);
+    }
+    
+    return false;
+  }
+
+  function showBookmarkIndicator() {
+    bookmarkIndicator.classList.add('show');
+    setTimeout(() => {
+      bookmarkIndicator.classList.remove('show');
+    }, 2000);
+  }
+
+  function showStatusIndicator(message) {
+    statusIndicator.textContent = message;
+    statusIndicator.classList.add('show');
+    setTimeout(() => {
+      statusIndicator.classList.remove('show');
+    }, 2000);
+  }
+
+  // NEW: Auto-save function
+  function startAutoSave() {
+    // Clear existing interval
+    if (autoSaveInterval) {
+      clearInterval(autoSaveInterval);
+    }
+    
+    // Save every 30 seconds
+    autoSaveInterval = setInterval(() => {
+      if (chapters.length > 0) {
+        saveBookmark();
+        showStatusIndicator('Auto-saved');
+      }
+    }, 30000);
+  }
+
+  // NEW: Chapter caching
+  function cacheChapters(fileData, processedChapters) {
+    const cacheKey = 'novelReaderCache_' + btoa(fileData.name + fileData.size + fileData.lastModified);
+    const cacheData = {
+      fileData: fileData,
+      chapters: processedChapters,
+      timestamp: Date.now()
+    };
+    
+    // Use try-catch to handle quota exceeded errors
+    try {
+      localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+    } catch (e) {
+      console.warn('Could not cache chapters:', e);
+      // Clear old cache if storage is full
+      clearOldCache();
+    }
+  }
+
+  function getCachedChapters(fileData) {
+    const cacheKey = 'novelReaderCache_' + btoa(fileData.name + fileData.size + fileData.lastModified);
+    const cachedData = localStorage.getItem(cacheKey);
+    
+    if (!cachedData) return null;
+    
+    try {
+      const cache = JSON.parse(cachedData);
+      // Check if cache is less than 1 hour old
+      if (Date.now() - cache.timestamp < 60 * 60 * 1000) {
+        return cache.chapters;
+      }
+    } catch (e) {
+      console.error('Error reading cache:', e);
+    }
+    
+    return null;
+  }
+
+  function clearOldCache() {
+    // Clear cache entries older than 24 hours
+    const now = Date.now();
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('novelReaderCache_')) {
+        try {
+          const cache = JSON.parse(localStorage.getItem(key));
+          if (now - cache.timestamp > 24 * 60 * 60 * 1000) {
+            localStorage.removeItem(key);
+          }
+        } catch (e) {
+          // If we can't parse it, remove it
+          localStorage.removeItem(key);
+        }
+      }
+    }
+  }
 
   // Find & Replace Functions
   function handleFindReplaceFile(event) {
@@ -739,6 +1011,7 @@
       currentIndex--;
       renderChapter();
       updateDropdownHighlight();
+      saveBookmark(); // NEW: Auto-save when navigating
     }
   }
 
@@ -747,6 +1020,7 @@
       currentIndex++;
       renderChapter();
       updateDropdownHighlight();
+      saveBookmark(); // NEW: Auto-save when navigating
     }
   }
 
@@ -754,17 +1028,50 @@
     const file = event.target.files[0];
     if (!file) return;
 
+    // NEW: Store file data for caching and bookmarking
+    currentFileData = {
+      name: file.name,
+      size: file.size,
+      lastModified: file.lastModified
+    };
+
+    // NEW: Check cache first
+    const cachedChapters = getCachedChapters(currentFileData);
+    if (cachedChapters) {
+      chapters = cachedChapters;
+      populateDropdown();
+      
+      // Try to load bookmark
+      if (!loadBookmark()) {
+        currentIndex = 0;
+      }
+      
+      renderChapter();
+      updateDropdownHighlight();
+      startAutoSave(); // NEW: Start auto-save
+      showStatusIndicator('Loaded from cache');
+      return;
+    }
+
     const ext = file.name.split(".").pop().toLowerCase();
     if (ext === "txt") {
       const reader = new FileReader();
-      reader.onload = () => processText(reader.result);
+      reader.onload = () => {
+        processText(reader.result);
+        // NEW: Cache the processed chapters
+        cacheChapters(currentFileData, chapters);
+      };
       reader.readAsText(file);
     } else if (ext === "docx") {
       const reader = new FileReader();
       reader.onload = (ev) => {
         mammoth
           .extractRawText({ arrayBuffer: ev.target.result })
-          .then((result) => processText(result.value))
+          .then((result) => {
+            processText(result.value);
+            // NEW: Cache the processed chapters
+            cacheChapters(currentFileData, chapters);
+          })
           .catch((err) => alert("Error reading .docx: " + err));
       };
       reader.readAsArrayBuffer(file);
@@ -813,9 +1120,15 @@
     }
     
     populateDropdown();
-    currentIndex = 0;
+    
+    // NEW: Try to load bookmark, otherwise start from beginning
+    if (!loadBookmark()) {
+      currentIndex = 0;
+    }
+    
     renderChapter();
     updateDropdownHighlight();
+    startAutoSave(); // NEW: Start auto-save
   }
 
   function populateDropdown() {
@@ -834,13 +1147,14 @@
           currentIndex = i;
           renderChapter();
           updateDropdownHighlight();
+          saveBookmark(); // NEW: Auto-save when selecting chapter
           document.querySelector('.nav-container')._x_dataStack[0].tocOpen = false;
         });
         chapterDropdown.appendChild(item);
     });
   }
 
-  // NEW: Function to update the current chapter highlight in the dropdown
+  // Function to update the current chapter highlight in the dropdown
   function updateDropdownHighlight() {
     const dropdownItems = document.querySelectorAll('.dropdown-item');
     dropdownItems.forEach((item, index) => {
@@ -1026,6 +1340,36 @@
     } else {
       // Set default active font button
       document.querySelector('.font-button[data-font="Arial, sans-serif"]').classList.add("active");
+    }
+
+    // NEW: Try to load bookmark on page load if we have a file in cache
+    const bookmarkData = localStorage.getItem('novelReaderBookmark');
+    if (bookmarkData) {
+      try {
+        const bookmark = JSON.parse(bookmarkData);
+        if (bookmark.fileData) {
+          const cachedChapters = getCachedChapters(bookmark.fileData);
+          if (cachedChapters) {
+            chapters = cachedChapters;
+            currentFileData = bookmark.fileData;
+            currentIndex = bookmark.currentIndex;
+            populateDropdown();
+            renderChapter();
+            updateDropdownHighlight();
+            startAutoSave();
+            showStatusIndicator('Bookmark restored');
+          }
+        }
+      } catch (e) {
+        console.error('Error loading bookmark on startup:', e);
+      }
+    }
+  });
+
+  // NEW: Save bookmark when page is about to unload
+  window.addEventListener('beforeunload', () => {
+    if (chapters.length > 0) {
+      saveBookmark();
     }
   });
 </script>

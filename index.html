@@ -23,8 +23,18 @@
     --btn-hover: #d0d0d0;
     --red: #ef4444;
     --blue: #3b82f6;
-    --current-chapter: #3b82f6; /* New color for current chapter highlight */
+    --current-chapter: #3b82f6;
     --green: #10b981;
+    
+    /* NEW: Warm mode colors */
+    --bg-warm: #f5ecd9;
+    --text-warm: #5c4b37;
+    --bg-warm-dark: #2a2418;
+    --text-warm-dark: #e8dfca;
+    --accent-warm: #e8dcc5;
+    --accent-warm-hover: #d8ccb5;
+    --btn-warm: #d8ccb5;
+    --btn-warm-hover: #c8bc95;
   }
 
   * {
@@ -39,7 +49,6 @@
     padding: 0;
     transition: background-color 0.3s ease, color 0.3s ease;
     padding-bottom: 80px;
-    /* Prevent pull-to-refresh on browsers that support it */
     overscroll-behavior-y: contain;
   }
 
@@ -50,7 +59,28 @@
     --accent-hover: #3d3d3d;
     --btn: #3d3d3d;
     --btn-hover: #4d4d4d;
-    --current-chapter: #1e40af; /* Darker blue for dark mode */
+    --current-chapter: #1e40af;
+  }
+
+  /* NEW: Warm mode styles */
+  body.warm {
+    background: var(--bg-warm);
+    color: var(--text-warm);
+    --accent: var(--accent-warm);
+    --accent-hover: var(--accent-warm-hover);
+    --btn: var(--btn-warm);
+    --btn-hover: var(--btn-warm-hover);
+    --current-chapter: #b45309;
+  }
+
+  body.warm.dark {
+    background: var(--bg-warm-dark);
+    color: var(--text-warm-dark);
+    --accent: #3a2e1f;
+    --accent-hover: #4a3e2f;
+    --btn: #4a3e2f;
+    --btn-hover: #5a4e3f;
+    --current-chapter: #d97706;
   }
 
   #chapter-content {
@@ -77,6 +107,17 @@
     color: var(--text-dark);
   }
 
+  /* NEW: Warm mode chapter content */
+  body.warm #chapter-content {
+    background: #fff9eb;
+    color: var(--text-warm);
+  }
+
+  body.warm.dark #chapter-content {
+    background: #3a2e1f;
+    color: var(--text-warm-dark);
+  }
+
   /* Navigation Bar Styles */
   .nav-container {
     position: fixed;
@@ -87,7 +128,7 @@
     background: var(--accent);
     padding: 10px 0;
     box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
-    display: block; /* Start visible */
+    display: block;
   }
 
   .nav-bar {
@@ -118,7 +159,6 @@
     background-color: var(--btn-hover);
   }
 
-  /* Dark mode toggle button - UPDATED to match other buttons */
   .mode-toggle-btn {
       background: var(--btn);
       border: none;
@@ -126,7 +166,7 @@
 
   .mode-toggle-btn:hover {
       background-color: var(--btn-hover);
-      transform: none; /* Remove the scale transform */
+      transform: none;
   }
 
   /* Dropdown styles */
@@ -162,7 +202,6 @@
     background-color: var(--accent-hover);
   }
 
-  /* NEW: Highlight current chapter in dropdown */
   .dropdown-item.current-chapter {
     background-color: var(--current-chapter);
     color: white;
@@ -218,7 +257,8 @@
     opacity: 1;
   }
 
-  .dark .sun-icon {
+  .dark .sun-icon,
+  .warm.dark .sun-icon {
     opacity: 0;
   }
 
@@ -227,8 +267,22 @@
     position: absolute;
   }
 
-  .dark .moon-icon {
+  .dark .moon-icon,
+  .warm.dark .moon-icon {
     opacity: 1;
+  }
+
+  .warm-icon {
+    opacity: 0;
+    position: absolute;
+  }
+
+  .warm .warm-icon {
+    opacity: 1;
+  }
+
+  .warm .sun-icon {
+    opacity: 0;
   }
 
   /* Settings panel styles */
@@ -271,7 +325,9 @@
     color: var(--text-light);
   }
 
-  body.dark .font-button {
+  body.dark .font-button,
+  body.warm .font-button,
+  body.warm.dark .font-button {
     color: var(--text-dark);
   }
 
@@ -295,7 +351,9 @@
     color: var(--text-light);
   }
 
-  body.dark .reset-button {
+  body.dark .reset-button,
+  body.warm .reset-button,
+  body.warm.dark .reset-button {
     color: var(--text-dark);
   }
 
@@ -319,17 +377,26 @@
     cursor: pointer;
   }
 
-  /* SVG icon styles - ALL white in dark mode */
+  /* SVG icon styles */
   .nav-svg-icon, .mode-icon, svg {
     width: 24px;
     height: 24px;
-    color: black; /* Or your preferred light mode color */
+    color: black;
   }
 
   body.dark .nav-svg-icon,
   body.dark .mode-icon,
-  body.dark svg {
+  body.dark svg,
+  body.warm.dark .nav-svg-icon,
+  body.warm.dark .mode-icon,
+  body.warm.dark svg {
     color: white !important;
+  }
+
+  body.warm .nav-svg-icon,
+  body.warm .mode-icon,
+  body.warm svg {
+    color: #5c4b37 !important;
   }
 
   /* Copy button styles */
@@ -397,12 +464,18 @@
     color: #155724;
   }
 
-  body.dark .find-replace-status.active {
+  body.dark .find-replace-status.active,
+  body.warm.dark .find-replace-status.active {
     background: #1e3a28;
     color: #90ee90;
   }
 
-  /* NEW: Pull-to-refresh indicator */
+  body.warm .find-replace-status.active {
+    background: #e8f5e8;
+    color: #2d5a2d;
+  }
+
+  /* Pull-to-refresh indicator */
   .pull-to-refresh-indicator {
     position: fixed;
     top: 0;
@@ -423,7 +496,7 @@
     transform: translateY(0);
   }
 
-  /* NEW: Bookmark indicator */
+  /* Bookmark indicator */
   .bookmark-indicator {
     position: fixed;
     top: 10px;
@@ -442,7 +515,7 @@
     opacity: 1;
   }
 
-  /* NEW: Status indicators */
+  /* Status indicators */
   .status-indicator {
     position: fixed;
     top: 10px;
@@ -464,17 +537,17 @@
 </head>
 <body>
 
-<!-- NEW: Pull-to-refresh indicator -->
+<!-- Pull-to-refresh indicator -->
 <div class="pull-to-refresh-indicator" id="pullToRefreshIndicator">
   ↻ Release to refresh current chapter
 </div>
 
-<!-- NEW: Bookmark indicator -->
+<!-- Bookmark indicator -->
 <div class="bookmark-indicator" id="bookmarkIndicator">
   ✓ Bookmarked
 </div>
 
-<!-- NEW: Status indicator -->
+<!-- Status indicator -->
 <div class="status-indicator" id="statusIndicator">
   ✓ Auto-saved
 </div>
@@ -515,7 +588,7 @@
  	 </svg>
 	</button>
     
-    <!-- Dark mode toggle button -->
+    <!-- Theme toggle button (UPDATED) -->
     <button class="mode-toggle-btn" id="modeToggleBtn">
       <svg class="mode-icon sun-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path fill="currentColor" d="M12,18c-3.3,0-6-2.7-6-6s2.7-6,6-6s6,2.7,6,6S15.3,18,12,18zM12,8c-2.2,0-4,1.8-4,4s1.8,4,4,4s4-1.8,4-4S14.2,8,12,8z"/>
@@ -530,6 +603,18 @@
       </svg>
       <svg class="mode-icon moon-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path fill="currentColor" d="M12.1,22c-0.3,0-0.6,0-0.9,0c-5.5-0.5-9.5-5.4-9-10.9c0.4-4.8,4.2-8.6,9-9c0.4,0,0.8,0.2,1,0.5c0.2,0.3,0.2,0.8-0.1,1.1c-2,2.7-1.4,6.4,1.3,8.4c2.1,1.6,5,1.6,7.1,0c0.3-0.2,0.7-0.3,1.1-0.1c0.3,0.2,0.5,0.6,0.5,1c-0.2,2.7-1.5,5.1-3.6,6.8C16.6,21.2,14.4,22,12.1,22zM9.3,4.4c-2.9,1-5,3.6-5.2,6.8c-0.4,4.4,2.8,8.3,7.2,8.7c2.1,0.2,4.2-0.4,5.8-1.8c1.1-0.9,1.9-2.1,2.4-3.4c-2.5,0.9-5.3,0.5-7.5-1.1C9.2,11.4,8.1,7.7,9.3,4.4z"/>
+      </svg>
+      <!-- NEW: Warm mode icon -->
+      <svg class="mode-icon warm-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path fill="currentColor" d="M12,1L12,1c0.6,0,1,0.4,1,1v2c0,0.6-0.4,1-1,1l0,0c-0.6,0-1-0.4-1-1V2C11,1.4,11.4,1,12,1z"/>
+        <path fill="currentColor" d="M12,21L12,21c0.6,0,1,0.4,1,1v2c0,0.6-0.4,1-1,1l0,0c-0.6,0-1-0.4-1-1v-2C11,21.4,11.4,21,12,21z"/>
+        <path fill="currentColor" d="M22.5,11H23c0.6,0,1,0.4,1,1l0,0c0,0.6-0.4,1-1,1h-0.5c-0.6,0-1-0.4-1-1l0,0C21.5,11.4,21.9,11,22.5,11z"/>
+        <path fill="currentColor" d="M2,12l0,0c0-0.6,0.4-1,1-1h0.5c0.6,0,1,0.4,1,1l0,0c0,0.6-0.4,1-1,1H3C2.4,13,2,12.6,2,12z"/>
+        <path fill="currentColor" d="M19.1,4.9L19.1,4.9c0.4,0.4,1,0.4,1.4,0l1.4-1.4c0.4-0.4,0.4-1,0-1.4l0,0c-0.4-0.4-1-0.4-1.4,0l-1.4,1.4C18.7,3.9,18.7,4.5,19.1,4.9z"/>
+        <path fill="currentColor" d="M4.9,19.1L4.9,19.1c0.4,0.4,0.4,1,0,1.4l0,0c-0.4,0.4-1,0.4-1.4,0L2.1,19.1c-0.4-0.4-0.4-1,0-1.4l0,0c0.4-0.4,1-0.4,1.4,0L4.9,19.1z"/>
+        <path fill="currentColor" d="M19.1,19.1L19.1,19.1c-0.4,0.4-0.4,1,0,1.4l0,0c0.4,0.4,1,0.4,1.4,0l1.4-1.4c0.4-0.4,0.4-1,0-1.4l0,0c-0.4-0.4-1-0.4-1.4,0L19.1,19.1z"/>
+        <path fill="currentColor" d="M4.9,4.9L4.9,4.9c-0.4,0.4-0.4,1,0,1.4l0,0c0.4,0.4,1,0.4,1.4,0l1.4-1.4c0.4-0.4,0.4-1,0-1.4l0,0c-0.4-0.4-1-0.4-1.4,0L4.9,4.9z"/>
+        <path fill="currentColor" d="M12,6c3.3,0,6,2.7,6,6s-2.7,6-6,6s-6-2.7-6-6S8.7,6,12,6 M12,4c-4.4,0-8,3.6-8,8s3.6,8,8,8s8-3.6,8-8S16.4,4,12,4L12,4z"/>
       </svg>
     </button>
     
@@ -641,15 +726,15 @@
   let currentIndex = 0;
   let navVisible = true;
   let findReplaceRules = [];
-  let currentFileData = null; // NEW: Store file data for caching
-  let autoSaveInterval = null; // NEW: Auto-save interval reference
+  let currentFileData = null;
+  let autoSaveInterval = null;
   
   const navContainer = document.getElementById("navContainer");
   const pullToRefreshIndicator = document.getElementById("pullToRefreshIndicator");
   const bookmarkIndicator = document.getElementById("bookmarkIndicator");
   const statusIndicator = document.getElementById("statusIndicator");
 
-  // NEW: Pull-to-refresh variables
+  // Pull-to-refresh variables
   let startY = 0;
   let currentY = 0;
   let isRefreshing = false;
@@ -681,14 +766,14 @@
   const fontButtons = document.querySelectorAll(".font-button");
   const resetSettingsBtn = document.getElementById("resetSettings");
 
-  // NEW: Pull-to-refresh event listeners
+  // Pull-to-refresh event listeners
   document.addEventListener('touchstart', handleTouchStart, { passive: false });
   document.addEventListener('touchmove', handleTouchMove, { passive: false });
   document.addEventListener('touchend', handleTouchEnd);
 
   // Event listeners
   fileInput.addEventListener("change", handleFile);
-  modeToggleBtn.addEventListener("click", toggleDarkMode);
+  modeToggleBtn.addEventListener("click", toggleTheme);
   findReplaceInput.addEventListener("change", handleFindReplaceFile);
   clearFindReplaceBtn.addEventListener("click", clearFindReplaceRules);
 
@@ -729,7 +814,49 @@
 
   resetSettingsBtn.addEventListener("click", resetSettings);
 
-  // NEW: Pull-to-refresh functions
+  // NEW: Theme toggle function (replaces dark mode toggle)
+  function toggleTheme() {
+    const body = document.body;
+    
+    if (body.classList.contains('dark')) {
+      // If currently in dark mode, switch to warm mode
+      body.classList.remove('dark');
+      body.classList.add('warm');
+    } else if (body.classList.contains('warm')) {
+      // If currently in warm mode, switch to light mode
+      body.classList.remove('warm');
+    } else {
+      // If currently in light mode, switch to dark mode
+      body.classList.add('dark');
+    }
+    
+    // Save preference to localStorage
+    localStorage.setItem('theme', body.classList.toString());
+    updateModeButton();
+  }
+
+  // NEW: Updated mode button function
+  function updateModeButton() {
+    const body = document.body;
+    const sunIcon = document.querySelector('.sun-icon');
+    const moonIcon = document.querySelector('.moon-icon');
+    const warmIcon = document.querySelector('.warm-icon');
+    
+    // Reset all icons
+    sunIcon.style.opacity = '0';
+    moonIcon.style.opacity = '0';
+    warmIcon.style.opacity = '0';
+    
+    if (body.classList.contains('dark')) {
+      moonIcon.style.opacity = '1';
+    } else if (body.classList.contains('warm')) {
+      warmIcon.style.opacity = '1';
+    } else {
+      sunIcon.style.opacity = '1';
+    }
+  }
+
+  // Pull-to-refresh functions
   function handleTouchStart(e) {
     if (window.scrollY === 0 && chapters.length > 0) {
       startY = e.touches[0].clientY;
@@ -783,7 +910,7 @@
     currentY = 0;
   }
 
-  // NEW: Bookmarking functions
+  // Bookmarking functions
   function saveBookmark() {
     if (chapters.length === 0) return;
     
@@ -835,7 +962,7 @@
     }, 2000);
   }
 
-  // NEW: Auto-save function
+  // Auto-save function
   function startAutoSave() {
     // Clear existing interval
     if (autoSaveInterval) {
@@ -851,7 +978,7 @@
     }, 30000);
   }
 
-  // NEW: Chapter caching
+  // Chapter caching
   function cacheChapters(fileData, processedChapters) {
     const cacheKey = 'novelReaderCache_' + btoa(fileData.name + fileData.size + fileData.lastModified);
     const cacheData = {
@@ -1011,7 +1138,7 @@
       currentIndex--;
       renderChapter();
       updateDropdownHighlight();
-      saveBookmark(); // NEW: Auto-save when navigating
+      saveBookmark(); // Auto-save when navigating
     }
   }
 
@@ -1020,7 +1147,7 @@
       currentIndex++;
       renderChapter();
       updateDropdownHighlight();
-      saveBookmark(); // NEW: Auto-save when navigating
+      saveBookmark(); // Auto-save when navigating
     }
   }
 
@@ -1028,14 +1155,14 @@
     const file = event.target.files[0];
     if (!file) return;
 
-    // NEW: Store file data for caching and bookmarking
+    // Store file data for caching and bookmarking
     currentFileData = {
       name: file.name,
       size: file.size,
       lastModified: file.lastModified
     };
 
-    // NEW: Check cache first
+    // Check cache first
     const cachedChapters = getCachedChapters(currentFileData);
     if (cachedChapters) {
       chapters = cachedChapters;
@@ -1048,7 +1175,7 @@
       
       renderChapter();
       updateDropdownHighlight();
-      startAutoSave(); // NEW: Start auto-save
+      startAutoSave(); // Start auto-save
       showStatusIndicator('Loaded from cache');
       return;
     }
@@ -1058,7 +1185,7 @@
       const reader = new FileReader();
       reader.onload = () => {
         processText(reader.result);
-        // NEW: Cache the processed chapters
+        // Cache the processed chapters
         cacheChapters(currentFileData, chapters);
       };
       reader.readAsText(file);
@@ -1069,7 +1196,7 @@
           .extractRawText({ arrayBuffer: ev.target.result })
           .then((result) => {
             processText(result.value);
-            // NEW: Cache the processed chapters
+            // Cache the processed chapters
             cacheChapters(currentFileData, chapters);
           })
           .catch((err) => alert("Error reading .docx: " + err));
@@ -1085,8 +1212,6 @@
     
     // Enhanced chapter pattern to include Chinese chapter markers
     const chapterPattern = /^\s*((?:외전\s*\d+\s*화|제\s*\d+\s*화|\d+\s*화|外传\s*\d+\s*话|第\s*\d+\s*话|\d+\s*话|Chapter\s+\d+|Episode\s+\d+|序章|終章|人物介紹|自述|後記|卷末|外篇|附錄：角色手寫信|卷[一二三四五六七八九十百千零\d]+|章之[一二三四五六七八九十百千零\d]+|章[一二三四五六七八九十百千零\d]+|第[一二三四五六七八九十百千零\d]+章)(?:\s|\.|$|（|\(|──).*$)/gmi;
-	// If I want to add/remove lines with "◎" then add/remove this portion: |◎[^\n]+
-	// For example: 'Add' then line becomes this, 		/^\s*((?:외전\s*\d+\s*화|제\s*\d+\s*화|\d+\s*화|外传\s*\d+\s*话|第\s*\d+\s*话|\d+\s*话|Chapter\s+\d+|Episode\s+\d+|序章|終章|卷末|卷[一二三四五六七八九十百千零\d]+|章之[一二三四五六七八九十百千零\d]+|章[一二三四五六七八九十百千零\d]+|第[一二三四五六七八九十百千零\d]+章|◎[^\n]+)(?:\s|\.|$))/gmi;
     
     const chapterPositions = [];
     let match;
@@ -1121,14 +1246,14 @@
     
     populateDropdown();
     
-    // NEW: Try to load bookmark, otherwise start from beginning
+    // Try to load bookmark, otherwise start from beginning
     if (!loadBookmark()) {
       currentIndex = 0;
     }
     
     renderChapter();
     updateDropdownHighlight();
-    startAutoSave(); // NEW: Start auto-save
+    startAutoSave(); // Start auto-save
   }
 
   function populateDropdown() {
@@ -1147,7 +1272,7 @@
           currentIndex = i;
           renderChapter();
           updateDropdownHighlight();
-          saveBookmark(); // NEW: Auto-save when selecting chapter
+          saveBookmark(); // Auto-save when selecting chapter
           document.querySelector('.nav-container')._x_dataStack[0].tocOpen = false;
         });
         chapterDropdown.appendChild(item);
@@ -1242,29 +1367,6 @@
     }, 10);
   }
 
-  function toggleDarkMode() {
-    document.body.classList.toggle("dark");
-    // Save preference to localStorage
-    localStorage.setItem('darkMode', document.body.classList.contains('dark'));
-    
-    // Update button state
-    updateModeButton();
-  }
-
-  function updateModeButton() {
-    const isDark = document.body.classList.contains('dark');
-    const sunIcon = document.querySelector('.sun-icon');
-    const moonIcon = document.querySelector('.moon-icon');
-    
-    if (isDark) {
-      sunIcon.style.opacity = '0';
-      moonIcon.style.opacity = '1';
-    } else {
-      sunIcon.style.opacity = '1';
-      moonIcon.style.opacity = '0';
-    }
-  }
-
   function updateFontSize() {
     const size = fontSizeInput.value + "px";
     chapterContent.style.fontSize = size;
@@ -1305,9 +1407,10 @@
 
   // Initialize from localStorage
   window.addEventListener("load", () => {
-    // Dark mode
-    if (localStorage.getItem('darkMode') === 'true') {
-        document.body.classList.add('dark');
+    // Theme (light/dark/warm)
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      document.body.className = savedTheme;
     }
     updateModeButton();
     
@@ -1342,7 +1445,7 @@
       document.querySelector('.font-button[data-font="Arial, sans-serif"]').classList.add("active");
     }
 
-    // NEW: Try to load bookmark on page load if we have a file in cache
+    // Try to load bookmark on page load if we have a file in cache
     const bookmarkData = localStorage.getItem('novelReaderBookmark');
     if (bookmarkData) {
       try {
@@ -1366,7 +1469,7 @@
     }
   });
 
-  // NEW: Save bookmark when page is about to unload
+  // Save bookmark when page is about to unload
   window.addEventListener('beforeunload', () => {
     if (chapters.length > 0) {
       saveBookmark();

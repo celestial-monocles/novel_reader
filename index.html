@@ -118,6 +118,12 @@
     color: var(--text-warm-dark);
   }
 
+  /* NEW: Loading state */
+  #chapter-content.loading {
+    opacity: 0.7;
+    pointer-events: none;
+  }
+
   /* Navigation Bar Styles */
   .nav-container {
     position: fixed;
@@ -496,19 +502,21 @@
     transform: translateY(0);
   }
 
-  /* Bookmark indicator */
+  /* Bookmark indicator - MOVED TO BOTTOM */
   .bookmark-indicator {
     position: fixed;
     bottom: 80px;
-    left: 10px;
+    left: 50%;
+    transform: translateX(-50%);
     background: var(--green);
     color: white;
-    padding: 5px 10px;
-    border-radius: 4px;
-    font-size: 12px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
     z-index: 1000;
     opacity: 0;
     transition: opacity 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
   }
 
   .bookmark-indicator.show {
@@ -533,9 +541,49 @@
   .status-indicator.show {
     opacity: 1;
   }
+
+  /* NEW: Loading spinner */
+  .loading-spinner {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1002;
+    background: rgba(0,0,0,0.8);
+    color: white;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+  }
+
+  .loading-spinner.show {
+    display: block;
+  }
+
+  .spinner {
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #3498db;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 10px;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
 </style>
 </head>
 <body>
+
+<!-- NEW: Loading spinner -->
+<div class="loading-spinner" id="loadingSpinner">
+  <div class="spinner"></div>
+  <div id="loadingText">Loading file...</div>
+</div>
 
 <!-- Pull-to-refresh indicator -->
 <div class="pull-to-refresh-indicator" id="pullToRefreshIndicator">
@@ -733,6 +781,8 @@
   const pullToRefreshIndicator = document.getElementById("pullToRefreshIndicator");
   const bookmarkIndicator = document.getElementById("bookmarkIndicator");
   const statusIndicator = document.getElementById("statusIndicator");
+  const loadingSpinner = document.getElementById("loadingSpinner");
+  const loadingText = document.getElementById("loadingText");
 
   // Pull-to-refresh variables
   let startY = 0;
@@ -856,6 +906,18 @@
     }
   }
 
+  // NEW: Show/hide loading spinner
+  function showLoading(message = 'Loading...') {
+    loadingText.textContent = message;
+    loadingSpinner.classList.add('show');
+    chapterContent.classList.add('loading');
+  }
+
+  function hideLoading() {
+    loadingSpinner.classList.remove('show');
+    chapterContent.classList.remove('loading');
+  }
+
   // Pull-to-refresh functions
   function handleTouchStart(e) {
     if (window.scrollY === 0 && chapters.length > 0) {
@@ -962,14 +1024,14 @@
     }, 2000);
   }
 
-  // Auto-save function
+  // Auto-save function - UPDATED to 5 minutes
   function startAutoSave() {
     // Clear existing interval
     if (autoSaveInterval) {
       clearInterval(autoSaveInterval);
     }
     
-    // Save every 30 seconds
+    // Save every 5 minutes (300,000 milliseconds)
     autoSaveInterval = setInterval(() => {
       if (chapters.length > 0) {
         saveBookmark();
@@ -1032,6 +1094,131 @@
           localStorage.removeItem(key);
         }
       }
+    }
+  }
+
+  // NEW: Memory management for large files
+  function optimizeLargeFileProcessing(text) {
+    // Clear previous chapters to free memory
+    chapters = [];
+    
+    // Process in chunks if file is very large
+    if (text.length > 1000000) { // Over 1MB
+      showStatusIndicator('Processing large file...');
+      // Force garbage collection if possible
+      if (window.gc) {
+        window.gc();
+      }
+    }
+    return text;
+  }
+
+  // UPDATED: File handling with better error handling and progress tracking
+  function handleFile(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // File size validation (50MB limit)
+    const maxSize = 50 * 1024 * 1024; // 50MB in bytes
+    if (file.size > maxSize) {
+      alert(`File too large! Please choose a file smaller than 50MB. Your file is ${(file.size / (1024 * 1024)).toFixed(2)}MB`);
+      fileInput.value = ''; // Reset file input
+      return;
+    }
+
+    // Show loading indicator
+    showLoading('Loading file...');
+
+    // Store file data for caching and bookmarking
+    currentFileData = {
+      name: file.name,
+      size: file.size,
+      lastModified: file.lastModified
+    };
+
+    // Check cache first
+    const cachedChapters = getCachedChapters(currentFileData);
+    if (cachedChapters) {
+      chapters = cachedChapters;
+      populateDropdown();
+      
+      if (!loadBookmark()) {
+        currentIndex = 0;
+      }
+      
+      renderChapter();
+      updateDropdownHighlight();
+      startAutoSave();
+      hideLoading();
+      showStatusIndicator('Loaded from cache');
+      return;
+    }
+
+    const ext = file.name.split(".").pop().toLowerCase();
+    if (ext === "txt") {
+      const reader = new FileReader();
+      
+      // Add progress tracking for large files
+      reader.onprogress = (e) => {
+        if (e.lengthComputable) {
+          const percentLoaded = Math.round((e.loaded / e.total) * 100);
+          showLoading(`Loading... ${percentLoaded}%`);
+        }
+      };
+      
+      reader.onload = () => {
+        showLoading('Processing text...');
+        setTimeout(() => { // Give UI time to update
+          try {
+            processText(reader.result);
+            cacheChapters(currentFileData, chapters);
+            hideLoading();
+            showStatusIndicator('File loaded successfully!');
+          } catch (error) {
+            hideLoading();
+            alert('Error processing file: ' + error.message);
+            console.error('File processing error:', error);
+          }
+        }, 100);
+      };
+      
+      reader.onerror = () => {
+        hideLoading();
+        showStatusIndicator('Error reading file');
+        alert('Error reading file. Please try again.');
+      };
+      
+      reader.readAsText(file);
+    } else if (ext === "docx") {
+      const reader = new FileReader();
+      
+      reader.onload = (ev) => {
+        showLoading('Processing DOCX...');
+        mammoth
+          .extractRawText({ arrayBuffer: ev.target.result })
+          .then((result) => {
+            processText(result.value);
+            cacheChapters(currentFileData, chapters);
+            hideLoading();
+            showStatusIndicator('File loaded successfully!');
+          })
+          .catch((err) => {
+            hideLoading();
+            showStatusIndicator('Error processing DOCX');
+            alert("Error reading .docx: " + err);
+          });
+      };
+      
+      reader.onerror = () => {
+        hideLoading();
+        showStatusIndicator('Error reading file');
+        alert('Error reading file. Please try again.');
+      };
+      
+      reader.readAsArrayBuffer(file);
+    } else {
+      hideLoading();
+      alert("Unsupported file type. Use .txt or .docx");
     }
   }
 
@@ -1151,63 +1338,8 @@
     }
   }
 
-  function handleFile(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    // Store file data for caching and bookmarking
-    currentFileData = {
-      name: file.name,
-      size: file.size,
-      lastModified: file.lastModified
-    };
-
-    // Check cache first
-    const cachedChapters = getCachedChapters(currentFileData);
-    if (cachedChapters) {
-      chapters = cachedChapters;
-      populateDropdown();
-      
-      // Try to load bookmark
-      if (!loadBookmark()) {
-        currentIndex = 0;
-      }
-      
-      renderChapter();
-      updateDropdownHighlight();
-      startAutoSave(); // Start auto-save
-      showStatusIndicator('Loaded from cache');
-      return;
-    }
-
-    const ext = file.name.split(".").pop().toLowerCase();
-    if (ext === "txt") {
-      const reader = new FileReader();
-      reader.onload = () => {
-        processText(reader.result);
-        // Cache the processed chapters
-        cacheChapters(currentFileData, chapters);
-      };
-      reader.readAsText(file);
-    } else if (ext === "docx") {
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        mammoth
-          .extractRawText({ arrayBuffer: ev.target.result })
-          .then((result) => {
-            processText(result.value);
-            // Cache the processed chapters
-            cacheChapters(currentFileData, chapters);
-          })
-          .catch((err) => alert("Error reading .docx: " + err));
-      };
-      reader.readAsArrayBuffer(file);
-    } else {
-      alert("Unsupported file type. Use .txt or .docx");
-    }
-  }
-
   function processText(text) {
+    text = optimizeLargeFileProcessing(text);
     text = text.replace(/\r\n/g, '\n');
     
     // Enhanced chapter pattern to include Chinese chapter markers

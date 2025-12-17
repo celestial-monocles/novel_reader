@@ -562,6 +562,8 @@
     display: flex;
     gap: 10px;
     margin-top: 10px;
+	position: relative;
+	z-index: 1000; /* Use a very high number to override everything */
   }
 
   .find-nav-button {
@@ -575,6 +577,9 @@
     font-size: 13px;
     text-align: center;
     color: var(--text-light);
+	position: relative;
+	z-index: 1001;
+	white-space: nowrap;
   }
 
  .find-nav-button:hover {
@@ -886,10 +891,10 @@
 		  Enter a search term above
 	  </div>
 
-		<div class="find-navigation" id="findNavigation" style="display: none;">
-		  <button class="find-nav-button" @click.stop="window.prevFindResult()">← Previous</button>
-		  <button class="find-nav-button" @click.stop="window.nextFindResult()">Next →</button>
-		  <button class="find-nav-button" @click.stop="window.clearHighlights()">Clear Highlights</button>
+		<div class="find-navigation" id="findNavigation" style="display: none;">  
+		 <button class="find-nav-button" @click.stop.prevent="window.prevFindResult()">← Previous</button>  
+		 <button class="find-nav-button" @click.stop.prevent="window.nextFindResult()">Next →</button>  
+		 <button class="find-nav-button" @click.stop.prevent="window.clearHighlights()">Clear Highlights</button>  
 		</div>
     </div>
   </div>

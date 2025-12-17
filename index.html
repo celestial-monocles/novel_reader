@@ -533,6 +533,10 @@
     color: var(--text-dark);
   }
 
+  body.warm .find-input {
+    color: #5c4b37;
+  }
+
   .find-button {
     padding: 8px 16px;
     background: var(--blue);
@@ -586,14 +590,29 @@
     background: var(--btn-hover);
   }
 
-  /* Add these new rules for dark modes */
-  body.dark .find-nav-button,
-  body.warm.dark .find-nav-button {
-    color: var(--text-dark);
+  /* Add these new rules for warm mode text contrast */
+  body.warm .find-nav-button {
+    color: #5c4b37;
   }
 
-  body.warm .find-nav-button {
-    color: var(--text-warm);
+  body.warm.dark .find-nav-button {
+    color: #e8dfca;
+  }
+
+  body.warm .font-button {
+    color: #5c4b37;
+  }
+
+  body.warm.dark .font-button {
+    color: #e8dfca;
+  }
+
+  body.warm .reset-button {
+    color: #5c4b37;
+  }
+
+  body.warm.dark .reset-button {
+    color: #e8dfca;
   }
 
   /* Highlight for found text */

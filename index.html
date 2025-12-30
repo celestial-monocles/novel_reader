@@ -1705,6 +1705,7 @@ function escapeHtml(text) {
     // Enhanced chapter pattern to include Chinese chapter markers
     const chapterPattern = /^\s*((?:외전\s*\d+\s*화|제\s*\d+\s*화|\d+\s*화|外传\s*\d+\s*话|第\s*\d+\s*话|\d+\s*话|Chapter\s+\d+|Episode\s+\d+|序章|終章|人物介紹|自述|後記|卷末|外篇|0[1-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9]|6[0-9]|7[0-9]|8[0-9]|9[0-9]|插曲之[一二三四五六七八九十百千零\d]+|特別收錄|畫家\s*Free\s*Talk|附錄：角色手寫信|卷[一二三四五六七八九十百千零\d]+|章之[一二三四五六七八九十百千零\d]+|章[一二三四五六七八九十百千零\d]+|第[一二三四五六七八九十百千零\d]+章)(?:\s|\.|$|（|\(|──).*$)/gmi;
     
+    
     const chapterPositions = [];
     let match;
     while ((match = chapterPattern.exec(text)) !== null) {

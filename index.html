@@ -1014,6 +1014,7 @@
   // GLOBAL VARIABLES
   // ============================================
   window.chapters = [];
+  window.originalChapters = []; // Store original unmodified chapters
   window.currentIndex = 0;
   window.navVisible = true;
   window.findReplaceRules = [];
@@ -1076,6 +1077,7 @@
     
     // Reset the current state
     window.chapters = [];
+    window.originalChapters = [];
     window.currentIndex = 0;
     window.currentFileData = null;
     
@@ -1095,8 +1097,9 @@
     
     chapterDropdown.innerHTML = '';
     
-    // Clear file input
+    // Clear file inputs
     fileInput.value = '';
+    findReplaceInput.value = '';
     
     // Show success message
     showStatusIndicator('Cache cleared');
@@ -1568,6 +1571,8 @@
     const cacheData = {
       fileData: fileData,
       chapters: processedChapters,
+      originalChapters: window.originalChapters, // Store original chapters
+      findReplaceRules: window.findReplaceRules, // Store find/replace rules too
       timestamp: Date.now()
     };
     
@@ -1590,7 +1595,21 @@
       const cache = JSON.parse(cachedData);
       // Check if cache is less than 1 hour old
       if (Date.now() - cache.timestamp < 60 * 60 * 1000) {
-        return cache.chapters;
+        // Restore everything from cache
+        window.originalChapters = cache.originalChapters || cache.chapters;
+        window.findReplaceRules = cache.findReplaceRules || [];
+        
+        // If we have find/replace rules, apply them to get the processed chapters
+        if (window.findReplaceRules.length > 0) {
+          window.chapters = [...window.originalChapters];
+          applyFindReplaceToChapters();
+          updateFindReplaceStatus(true, `Loaded ${window.findReplaceRules.length} find & replace rules from cache`);
+          updateCurrentRulesDisplay();
+        } else {
+          window.chapters = [...window.originalChapters];
+        }
+        
+        return window.chapters;
       }
     } catch (e) {
       console.error('Error reading cache:', e);
@@ -1618,7 +1637,10 @@
     }
   }
 
-  // Find & Replace Functions
+  // ============================================
+  // FIND & REPLACE FUNCTIONS - FIXED VERSION
+  // ============================================
+
   function handleFindReplaceFile(event) {
     const file = event.target.files[0];
     if (!file) return;
@@ -1641,9 +1663,10 @@
             updateCurrentRulesDisplay();
             
             // Apply find & replace to current chapters if any are loaded
-            if (window.chapters.length > 0) {
+            if (window.originalChapters.length > 0) {
               applyFindReplaceToChapters();
               renderChapter();
+              showStatusIndicator('Find & replace rules applied');
             }
           } else {
             throw new Error('Invalid JSON structure. Each rule must have "find" and "replace" properties.');
@@ -1660,8 +1683,12 @@
   }
 
   function applyFindReplaceToChapters() {
-    if (window.findReplaceRules.length === 0) return;
+    if (window.findReplaceRules.length === 0 || window.originalChapters.length === 0) return;
     
+    // Always start from the original chapters
+    window.chapters = [...window.originalChapters];
+    
+    // Apply all rules to each chapter
     window.chapters = window.chapters.map(chapterText => {
       let modifiedText = chapterText;
       window.findReplaceRules.forEach(rule => {
@@ -1704,11 +1731,15 @@
     updateCurrentRulesDisplay();
     
     // Reload the original text if we have chapters loaded
-    if (window.chapters.length > 0) {
-      // We need to reprocess the original file, so we'll trigger a re-upload
-      // For now, we'll just show a message
-      alert('Find & replace rules cleared. Reload your text file to see original content.');
+    if (window.originalChapters.length > 0) {
+      // Restore original chapters to display
+      window.chapters = [...window.originalChapters];
+      renderChapter();
+      showStatusIndicator('Find & replace rules cleared');
     }
+    
+    // Clear the file input so the same file can be uploaded again
+    findReplaceInput.value = '';
   }
 
   // Chapter navigation functions
@@ -1757,6 +1788,10 @@
     const cachedChapters = getCachedChapters(window.currentFileData);
     if (cachedChapters) {
       window.chapters = cachedChapters;
+      // Make sure we have original chapters
+      if (window.originalChapters.length === 0) {
+        window.originalChapters = [...window.originalChapters];
+      }
       populateDropdown();
       if (!loadBookmark()) window.currentIndex = 0;
       renderChapter();
@@ -1830,8 +1865,12 @@
 
     if (chapterPositions.length > 0) {
         window.chapters = [];
+        window.originalChapters = []; // Initialize original chapters array
+        
         if (chapterPositions[0] > 0) {
-            window.chapters.push(text.substring(0, chapterPositions[0]).trim());
+            const firstChapter = text.substring(0, chapterPositions[0]).trim();
+            window.chapters.push(firstChapter);
+            window.originalChapters.push(firstChapter);
         }
         
         for (let i = 0; i < chapterPositions.length; i++) {
@@ -1840,13 +1879,15 @@
             const chapterText = text.substring(start, end).trim();
             if (chapterText) {
                 window.chapters.push(chapterText);
+                window.originalChapters.push(chapterText); // Store original
             }
         }
     } else {
         window.chapters = [text];
+        window.originalChapters = [text]; // Store original
     }
     
-    // Apply find & replace rules if any are loaded
+    // IMPORTANT: Apply find & replace rules if any are loaded BEFORE populating dropdown
     if (window.findReplaceRules.length > 0) {
       applyFindReplaceToChapters();
     }
@@ -1861,6 +1902,19 @@
     renderChapter();
     updateDropdownHighlight();
     startAutoSave(); // Start auto-save
+  }
+
+  // FIXED: renderChapter function to apply find & replace rules on the fly
+  function renderChapter() {
+    if (window.chapters.length > 0 && window.currentIndex >= 0 && window.currentIndex < window.chapters.length) {
+      // Get the current chapter text (already processed with find/replace if rules exist)
+      let chapterText = window.chapters[window.currentIndex];
+      
+      // Convert the modified text to HTML with paragraphs
+      const content = convertToParagraphs(chapterText);
+      chapterContent.innerHTML = content;
+      window.scrollTo(0, 0);
+    }
   }
 
   function populateDropdown() {
@@ -1897,15 +1951,6 @@
         item.classList.remove('current-chapter');
       }
     });
-  }
-
-  function renderChapter() {
-    if (window.chapters.length > 0 && window.currentIndex >= 0 && window.currentIndex < window.chapters.length) {
-      // Convert the raw text to HTML with paragraphs
-      const content = convertToParagraphs(window.chapters[window.currentIndex]);
-      chapterContent.innerHTML = content;
-      window.scrollTo(0, 0);
-    }
   }
 
   function convertToParagraphs(text) {
@@ -2062,6 +2107,10 @@
           const cachedChapters = getCachedChapters(bookmark.fileData);
           if (cachedChapters) {
             window.chapters = cachedChapters;
+            // Make sure we have original chapters
+            if (window.originalChapters.length === 0) {
+              window.originalChapters = [...window.originalChapters];
+            }
             window.currentFileData = bookmark.fileData;
             window.currentIndex = bookmark.currentIndex;
             populateDropdown();

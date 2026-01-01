@@ -361,6 +361,28 @@
     cursor: pointer;
     transition: background-color 0.2s;
     color: var(--text-light);
+    /* NEW: Use the actual font family for each button */
+    font-family: Arial, sans-serif;
+  }
+
+  /* NEW: Set specific font for each button */
+  .font-button[data-font="Georgia, serif"] {
+    font-family: Georgia, serif;
+  }
+  .font-button[data-font="'Courier New', monospace"] {
+    font-family: 'Courier New', monospace;
+  }
+  .font-button[data-font="'Times New Roman', serif"] {
+    font-family: 'Times New Roman', serif;
+  }
+  .font-button[data-font="'Trebuchet MS', sans-serif"] {
+    font-family: 'Trebuchet MS', sans-serif;
+  }
+  .font-button[data-font="Poppins, sans-serif"] {
+    font-family: Poppins, sans-serif;
+  }
+  .font-button[data-font="Nunito Sans, sans-serif"] {
+    font-family: Nunito Sans, sans-serif;
   }
 
   body.dark .font-button,
@@ -387,6 +409,7 @@
     transition: background-color 0.2s;
     margin-top: 10px;
     color: var(--text-light);
+    width: 48%; /* NEW: Make buttons side by side */
   }
 
   body.dark .reset-button,
@@ -397,6 +420,41 @@
 
   .reset-button:hover {
     background: var(--btn-hover);
+  }
+
+  /* NEW: Clear cache button style - placed next to reset button */
+  .clear-cache-button {
+    padding: 8px 15px;
+    background: var(--btn);
+    color: var(--text-light);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-top: 10px;
+    width: 48%; /* NEW: Make buttons side by side */
+    font-weight: normal;
+    margin-left: 4%; /* NEW: Space between buttons */
+  }
+
+  .clear-cache-button:hover {
+    background: var(--btn-hover);
+  }
+
+  body.dark .clear-cache-button,
+  body.warm.dark .clear-cache-button {
+    color: var(--text-dark);
+  }
+
+  body.warm .clear-cache-button {
+    color: var(--text-warm);
+  }
+
+  /* NEW: Container for side-by-side buttons */
+  .button-row {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
   }
 
   .file-upload-button {
@@ -861,7 +919,11 @@
         </div>
       </div>
       
-      <button class="reset-button" id="resetSettings">Reset Settings</button>
+      <!-- NEW: Button row for side-by-side buttons -->
+      <div class="button-row">
+        <button class="reset-button" id="resetSettings">Reset Settings</button>
+        <button class="clear-cache-button" id="clearCacheBtn">Clear Cache & Data</button>
+      </div>
     </div>
   </div>
   
@@ -932,6 +994,7 @@
       <li>Dark/Warm/Light themes</li>
       <li>Customizable fonts and reading settings</li>
 	  <li>Find & Replace: Load custom JSON rules for bulk changes, or search directly within this chapter.</li>
+      <li><strong>NEW:</strong> Clear cache & data option in Settings</li>
     </ul>
     
     <p><strong>Limitations:</strong></p>
@@ -987,13 +1050,64 @@
   const lineHeightInput = document.getElementById("lineHeightInput");
   const fontButtons = document.querySelectorAll(".font-button");
   const resetSettingsBtn = document.getElementById("resetSettings");
+  const clearCacheBtn = document.getElementById("clearCacheBtn");
 
   // ============================================
- // FIND ON PAGE FUNCTIONS (FIXED & INTEGRATED)
- // ============================================
+  // NEW: SIMPLE CACHE CLEARING FUNCTION
+  // ============================================
+
+  // Function to clear all cache and data
+  function clearAllCache() {
+    // Clear cached files
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('novelReaderCache_')) {
+        localStorage.removeItem(key);
+      }
+    }
+    
+    // Clear bookmark
+    localStorage.removeItem('novelReaderBookmark');
+    
+    // Clear find & replace rules from memory
+    window.findReplaceRules = [];
+    updateFindReplaceStatus(false, 'Find & replace rules cleared');
+    updateCurrentRulesDisplay();
+    
+    // Reset the current state
+    window.chapters = [];
+    window.currentIndex = 0;
+    window.currentFileData = null;
+    
+    // Stop auto-save interval
+    if (window.autoSaveInterval) {
+      clearInterval(window.autoSaveInterval);
+      window.autoSaveInterval = null;
+    }
+    
+    // Reset the UI
+    chapterContent.innerHTML = `
+      <article>
+        <p><em>Load a .txt or .docx file to begin.</em></p>
+        <p><strong>Cache cleared!</strong> All cached files, bookmarks, and find & replace rules have been removed.</p>
+      </article>
+    `;
+    
+    chapterDropdown.innerHTML = '';
+    
+    // Clear file input
+    fileInput.value = '';
+    
+    // Show success message
+    showStatusIndicator('Cache cleared');
+  }
+
+  // ============================================
+  // FIND ON PAGE FUNCTIONS (FIXED & INTEGRATED)
+  // ============================================
  
- // Make functions global so Alpine.js can access them
- window.findInPage = function() {
+  // Make functions global so Alpine.js can access them
+  window.findInPage = function() {
     const term = findInput.value.trim();
     const findNavigation = document.getElementById("findNavigation");
 
@@ -1047,9 +1161,9 @@
     // Highlight all matches and navigate to first result
     window.highlightAllMatches();
     window.nextFindResult();
-};
+  };
 
-window.highlightAllMatches = function() {
+  window.highlightAllMatches = function() {
     if (!window.findTerm || window.findResults.length === 0) return;
 
     const chapterText = window.chapters[window.currentIndex];
@@ -1076,47 +1190,46 @@ window.highlightAllMatches = function() {
 
     // Convert the highlighted text into paragraphs, preserving the spans
     chapterContent.innerHTML = convertToParagraphsWithHighlights(highlightedHTML);
-};
+  };
 
-// NEW/FIXED Helper: Handles rendering text containing <span> tags into paragraphs
-function convertToParagraphsWithHighlights(text) {
+  // NEW/FIXED Helper: Handles rendering text containing <span> tags into paragraphs
+  function convertToParagraphsWithHighlights(text) {
     // Split by double newlines (paragraphs)
     const paragraphs = text.split(/\n\s*\n/);
 
     return paragraphs.map((p, index) => {
-        const trimmed = p.trim();
-        if (!trimmed) return '';
+      const trimmed = p.trim();
+      if (!trimmed) return '';
 
-        // Split into lines for <br> tags
-        const lines = trimmed.split('\n');
+      // Split into lines for <br> tags
+      const lines = trimmed.split('\n');
 
-        // Logic for the first paragraph's bold title
-        if (index === 0 && lines.length > 0) {
-            const firstLine = lines[0];
-            const remainingLines = lines.slice(1);
+      // Logic for the first paragraph's bold title
+      if (index === 0 && lines.length > 0) {
+        const firstLine = lines[0];
+        const remainingLines = lines.slice(1);
 
-            // Check if first line contains highlight spans or is too long for a title
-            if (firstLine.includes('<span class="highlight') || firstLine.length > 100) {
-                // Already highlighted or too long, just use <br> for lines
-                return `<p>${lines.join('<br>')}</p>`;
-            } else {
-                // Wrap first line in <strong>, then join with remaining lines using <br>
-                const firstLineHtml = `<strong>${firstLine}</strong>`;
-                if (remainingLines.length > 0) {
-                    return `<p>${firstLineHtml}<br>${remainingLines.join('<br>')}</p>`;
-                } else {
-                    return `<p>${firstLineHtml}</p>`;
-                }
-            }
+        // Check if first line contains highlight spans or is too long for a title
+        if (firstLine.includes('<span class="highlight') || firstLine.length > 100) {
+          // Already highlighted or too long, just use <br> for lines
+          return `<p>${lines.join('<br>')}</p>`;
         } else {
-            // Regular paragraph, join lines with <br>
-            return `<p>${lines.join('<br>')}</p>`;
+          // Wrap first line in <strong>, then join with remaining lines using <br>
+          const firstLineHtml = `<strong>${firstLine}</strong>`;
+          if (remainingLines.length > 0) {
+            return `<p>${firstLineHtml}<br>${remainingLines.join('<br>')}</p>`;
+          } else {
+            return `<p>${firstLineHtml}</p>`;
+          }
         }
+      } else {
+        // Regular paragraph, join lines with <br>
+        return `<p>${lines.join('<br>')}</p>`;
+      }
     }).join('');
-}
+  }
 
-
-window.navigateToFindResult = function(index) {
+  window.navigateToFindResult = function(index) {
     if (window.findResults.length === 0) return;
     
     // Wrap around logic
@@ -1143,57 +1256,57 @@ window.navigateToFindResult = function(index) {
 
     // Update results display
     findResultsElement.textContent = `Result ${index + 1} of ${window.findResults.length} for "${window.findTerm}"`;
-};
+  };
 
-window.nextFindResult = function() {
+  window.nextFindResult = function() {
     if (window.findResults.length === 0) return;
     let nextIndex = window.currentFindIndex + 1;
     window.navigateToFindResult(nextIndex);
-};
+  };
 
-window.prevFindResult = function() {
+  window.prevFindResult = function() {
     if (window.findResults.length === 0) return;
     let prevIndex = window.currentFindIndex - 1;
     window.navigateToFindResult(prevIndex);
-};
+  };
 
-// The resetFindState flag is used to prevent the chapter from re-rendering during search preparation
-window.clearHighlights = function(resetFindState = true) {
+  // The resetFindState flag is used to prevent the chapter from re-rendering during search preparation
+  window.clearHighlights = function(resetFindState = true) {
     const findNavigation = document.getElementById("findNavigation");
 
     if (resetFindState) {
-        // Reset all search state variables
-        window.findResults = [];
-        window.currentFindIndex = -1;
-        window.findTerm = '';
-        if(findInput) findInput.value = '';
+      // Reset all search state variables
+      window.findResults = [];
+      window.currentFindIndex = -1;
+      window.findTerm = '';
+      if(findInput) findInput.value = '';
 
-        findResultsElement.textContent = 'Enter a search term above';
-        if(findNavigation) findNavigation.style.display = 'none';
+      findResultsElement.textContent = 'Enter a search term above';
+      if(findNavigation) findNavigation.style.display = 'none';
     } else {
-        // Only clear active highlight class if we are preparing a new search
-        const activeHighlight = chapterContent.querySelector('.current-highlight');
-        if (activeHighlight) activeHighlight.classList.remove('current-highlight');
+      // Only clear active highlight class if we are preparing a new search
+      const activeHighlight = chapterContent.querySelector('.current-highlight');
+      if (activeHighlight) activeHighlight.classList.remove('current-highlight');
     }
 
     // Re-render the chapter without highlights if we reset the state
     if (resetFindState && window.chapters.length > 0) {
-        renderChapter();
+      renderChapter();
     }
-};
+  };
 
-// Helper function for regex escaping
-function escapeRegExp(string) {
+  // Helper function for regex escaping
+  function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
+  }
 
-// Ensure the HTML escaping function is correctly defined
-function escapeHtml(text) {
+  // Ensure the HTML escaping function is correctly defined
+  function escapeHtml(text) {
     if (typeof text !== 'string') return '';
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
-}
+  }
 
   // ============================================
   // REST OF THE FUNCTIONS
@@ -1222,6 +1335,7 @@ function escapeHtml(text) {
   modeToggleBtn.addEventListener("click", toggleTheme);
   findReplaceInput.addEventListener("change", handleFindReplaceFile);
   clearFindReplaceBtn.addEventListener("click", clearFindReplaceRules);
+  clearCacheBtn.addEventListener("click", clearAllCache);
 
   // Font settings event listeners
   fontSizeRange.addEventListener("input", () => {
@@ -1968,6 +2082,11 @@ function escapeHtml(text) {
     if (window.chapters.length > 0) {
       saveBookmark();
     }
+  });
+
+  // NEW: Auto-clear old cache on startup
+  window.addEventListener("load", () => {
+    setTimeout(clearOldCache, 1000);
   });
 </script>
 </body>

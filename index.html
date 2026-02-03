@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Novel Chapter Reader</title>
+<title>Novel Chapter Reader - Enhanced</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 <meta name="google" content="notranslate">
 <!-- Include Alpine.js -->
@@ -139,7 +139,7 @@
     margin: 0 auto;
   }
 
-  .nav-button, .file-upload-button, .mode-toggle-btn {
+  .nav-button, .file-upload-button, .mode-toggle-btn, .more-button {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -154,7 +154,7 @@
     margin: 0 2px;
   }
 
-  .nav-button:hover, .file-upload-button:hover {
+  .nav-button:hover, .file-upload-button:hover, .more-button:hover {
     background-color: var(--btn-hover);
   }
 
@@ -177,7 +177,7 @@
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     width: 90%;
-    max-width: 400px;
+    max-width: 350px; /* CHANGED: Consistent max-width for all dropdowns */
     max-height: 60vh;
     overflow-y: auto;
     z-index: 101;
@@ -236,6 +236,21 @@
     padding: 8px 15px;
     cursor: pointer;
     transition: background-color 0.2s;
+    border: none;
+    background: transparent;
+    width: 100%;
+    text-align: left;
+    font-size: 14px;
+    color: var(--text-light);
+  }
+
+  body.dark .dropdown-item,
+  body.warm.dark .dropdown-item {
+    color: var(--text-dark);
+  }
+
+  body.warm .dropdown-item {
+    color: var(--text-warm);
   }
 
   .dropdown-item:hover {
@@ -274,7 +289,7 @@
       top: 0;
       left: auto;
       transform: none;
-      width: 300px;
+      width: 350px; /* CHANGED: Consistent width for desktop */
     }
 	
 	.nav-container .dropdown {
@@ -283,6 +298,58 @@
 
     body {
       padding-bottom: 0;
+    }
+  }
+
+  /* MOBILE OPTIMIZATION - OPTION 4 */
+  @media (max-width: 767px) {
+    .nav-bar {
+      justify-content: space-around;
+      padding: 8px 5px;
+    }
+    
+    /* Hide secondary buttons on mobile */
+    .nav-button:nth-child(2), /* Patterns */
+    .nav-button:nth-child(4), /* Fonts */
+    .nav-button:nth-child(5), /* Find */
+    .mode-toggle-btn { /* Theme */
+      display: none;
+    }
+    
+    /* Show essential buttons */
+    .file-upload-button,
+    .nav-button:nth-child(3), /* TOC */
+    .nav-button:nth-last-child(3), /* Copy */
+    .nav-button:nth-last-child(2), /* Prev */
+    .nav-button:nth-last-child(1), /* Next */
+    .more-button {
+      display: flex;
+      width: 52px;
+      height: 52px;
+      margin: 0 3px;
+    }
+    
+    .more-button {
+      background: var(--btn);
+    }
+    
+    /* Adjust dropdown position for better visibility */
+    .dropdown {
+      bottom: 70px;
+      max-width: 90%; /* Keep 90% on mobile for all dropdowns */
+    }
+    
+    /* More options dropdown specific styling */
+    .more-dropdown .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 15px;
+    }
+    
+    .more-dropdown .dropdown-item svg {
+      width: 18px;
+      height: 18px;
     }
   }
 
@@ -450,7 +517,6 @@
     color: var(--text-warm);
   }
 
-  /* NEW: Container for side-by-side buttons */
   .button-row {
     display: flex;
     justify-content: space-between;
@@ -776,6 +842,155 @@
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
   }
+  
+  /* NEW: Chapter Patterns Config Styles - UPDATED FOR CONSISTENCY */
+  .patterns-config {
+    padding: 15px;
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+  
+  .pattern-group {
+    margin-bottom: 15px;
+    padding: 10px;
+    background: var(--accent);
+    border-radius: 6px;
+  }
+  
+  .pattern-group h4 {
+    margin: 0 0 8px 0;
+    color: var(--text-light);
+    font-size: 13px;
+    font-weight: bold;
+  }
+  
+  .dark .pattern-group h4,
+  .warm.dark .pattern-group h4 {
+    color: var(--text-dark);
+  }
+  
+  .warm .pattern-group h4 {
+    color: var(--text-warm);
+  }
+  
+  .pattern-checkbox {
+    display: flex;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+  
+  .pattern-checkbox input {
+    margin-right: 8px;
+    transform: scale(0.9);
+  }
+  
+  .pattern-checkbox label {
+    font-size: 12px;
+    color: var(--text-light);
+    line-height: 1.3;
+  }
+  
+  .dark .pattern-checkbox label,
+  .warm.dark .pattern-checkbox label {
+    color: var(--text-dark);
+  }
+  
+  .warm .pattern-checkbox label {
+    color: var(--text-warm);
+  }
+  
+  .custom-patterns {
+    margin-top: 15px;
+  }
+  
+  .custom-patterns h4 {
+    margin: 0 0 8px 0;
+    font-size: 13px;
+    font-weight: bold;
+  }
+  
+  .custom-pattern-input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    border: 1px solid var(--btn);
+    background: var(--accent);
+    color: var(--text-light);
+    font-size: 12px;
+    resize: vertical;
+    min-height: 60px;
+    max-height: 120px;
+  }
+  
+  .dark .custom-pattern-input,
+  .warm.dark .custom-pattern-input {
+    color: var(--text-dark);
+  }
+  
+  .warm .custom-pattern-input {
+    color: var(--text-warm);
+  }
+  
+  .pattern-test-area {
+    margin-top: 15px;
+    padding: 10px;
+    background: var(--btn);
+    border-radius: 4px;
+    font-size: 11px;
+  }
+  
+  .pattern-test-title {
+    margin-bottom: 8px;
+    font-weight: bold;
+    font-size: 12px;
+  }
+  
+  .pattern-match {
+    background: #d4edda;
+    color: #155724;
+    padding: 2px 4px;
+    border-radius: 2px;
+    margin: 2px;
+    display: inline-block;
+    font-size: 11px;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .dark .pattern-match,
+  .warm.dark .pattern-match {
+    background: #1e3a28;
+    color: #90ee90;
+  }
+  
+  .warm .pattern-match {
+    background: #e8f5e8;
+    color: #2d5a2d;
+  }
+  
+  /* Make pattern groups more compact on mobile */
+  @media (max-width: 767px) {
+    .pattern-group {
+      padding: 8px;
+      margin-bottom: 10px;
+    }
+    
+    .pattern-checkbox {
+      margin-bottom: 4px;
+    }
+    
+    .pattern-checkbox label {
+      font-size: 11px;
+    }
+    
+    .pattern-test-area {
+      padding: 8px;
+      font-size: 10px;
+    }
+  }
 </style>
 </head>
 <body>
@@ -797,11 +1012,19 @@
   ✓ Auto-saved
 </div>
 
-<!-- Navigation Bar - UPDATED WITH GLOBAL VARIABLE ACCESS -->
-<div class="nav-container" x-data="{ open: false, tocOpen: false, fontsOpen: false, findReplaceOpen: false, findMode: 'replace' }" id="navContainer">
+<!-- Navigation Bar - UPDATED WITH MORE BUTTON -->
+<div class="nav-container" x-data="{ 
+  open: false, 
+  tocOpen: false, 
+  fontsOpen: false, 
+  findReplaceOpen: false,
+  patternsOpen: false,
+  moreOpen: false, <!-- NEW: More dropdown -->
+  findMode: 'replace' 
+}" id="navContainer">
   <div class="nav-bar">
   
-	<!-- File Upload Button -->
+    <!-- File Upload Button -->
     <div class="file-upload-button">
       <svg class="nav-svg-icon" viewBox="0 0 24 24" xmlns='http://www.w3.org/2000/svg'>
         <rect width='24' height='24' stroke='none' fill='#000000' opacity='0'/>
@@ -811,13 +1034,25 @@
       </svg>
       <input type="file" id="fileInput" class="file-upload-input" accept=".txt,.docx">
     </div>
-	
+    
+    <!-- Chapter Patterns Button (hidden on mobile, shown on desktop) -->
+    <button class="nav-button" @click="patternsOpen = !patternsOpen" title="Configure Chapter Detection">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="24" height="24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+        <path d="M6 2 L26 2 26 22 6 22 Z M16 6 L16 18 M6 12 L26 12"></path>
+        <circle cx="12" cy="8" r="2"></circle>
+        <circle cx="20" cy="16" r="2"></circle>
+        <circle cx="12" cy="16" r="2"></circle>
+      </svg>
+    </button>
+    
+    <!-- Table of Contents Button -->
     <button class="nav-button" @click="tocOpen = !tocOpen">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="24" height="24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3">
         <path d="M4 8 L24 8 M4 16 L28 16 M4 24 L28 24"></path>
       </svg>
     </button>
     
+    <!-- Font Settings Button (hidden on mobile, shown on desktop) -->
     <button class="nav-button" @click="fontsOpen = !fontsOpen">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="24" height="24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3">
         <path d="M13 2 L13 6 11 7 8 4 4 8 7 11 6 13 2 13 2 19 6 19 7 21 4 24 8 28 11 25 13 26 13 30 19 30 19 26 21 25 24 28 28 24 25 21 26 19 30 19 30 13 26 13 25 11 28 8 24 4 21 7 19 6 19 2 Z"></path>
@@ -825,15 +1060,15 @@
       </svg>
     </button>
     
-    <!-- Find & Replace Button -->
-	<button class="nav-button" @click="findReplaceOpen = !findReplaceOpen">
-	  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="24" height="24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="4">
+    <!-- Find & Replace Button (hidden on mobile, shown on desktop) -->
+    <button class="nav-button" @click="findReplaceOpen = !findReplaceOpen">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="24" height="24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="4">
         <circle cx="14" cy="14" r="12"></circle>
         <path d="M23 23 L30 30"></path>
- 	  </svg>
-	</button>
+      </svg>
+    </button>
     
-    <!-- Theme toggle button (UPDATED) -->
+    <!-- Theme toggle button (hidden on mobile, shown on desktop) -->
     <button class="mode-toggle-btn" id="modeToggleBtn">
       <svg class="mode-icon sun-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path fill="currentColor" d="M12,18c-3.3,0-6-2.7-6-6s2.7-6,6-6s6,2.7,6,6S15.3,18,12,18zM12,8c-2.2,0-4,1.8-4,4s1.8,4,4,4s4-1.8,4-4S14.2,8,12,8z"/>
@@ -849,10 +1084,10 @@
       <svg class="mode-icon moon-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path fill="currentColor" d="M12.1,22c-0.3,0-0.6,0-0.9,0c-5.5-0.5-9.5-5.4-9-10.9c0.4-4.8,4.2-8.6,9-9c0.4,0,0.8,0.2,1,0.5c0.2,0.3,0.2,0.8-0.1,1.1c-2,2.7-1.4,6.4,1.3,8.4c2.1,1.6,5,1.6,7.1,0c0.3-0.2,0.7-0.3,1.1-0.1c0.3,0.2,0.5,0.6,0.5,1c-0.2,2.7-1.5,5.1-3.6,6.8C16.6,21.2,14.4,22,12.1,22zM9.3,4.4c-2.9,1-5,3.6-5.2,6.8c-0.4,4.4,2.8,8.3,7.2,8.7c2.1,0.2,4.2-0.4,5.8-1.8c1.1-0.9,1.9-2.1,2.4-3.4c-2.5,0.9-5.3,0.5-7.5-1.1C9.2,11.4,8.1,7.7,9.3,4.4z"/>
       </svg>
-      <!-- NEW: Warm mode icon -->
+      <!-- Warm mode icon -->
       <svg class="mode-icon warm-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-	  <path fill="none" stroke="currentColor" stroke-width="2" d="M12,2l3.09,6.26L22,9.27l-5,4.87l1.18,6.88L12,17.77l-6.18,3.25L7,14.14L2,9.27l6.91-1.01L12,2z"/>
-	</svg>
+        <path fill="none" stroke="currentColor" stroke-width="2" d="M12,2l3.09,6.26L22,9.27l-5,4.87l1.18,6.88L12,17.77l-6.18,3.25L7,14.14L2,9.27l6.91-1.01L12,2z"/>
+      </svg>
     </button>
     
     <!-- Copy Button -->
@@ -865,17 +1100,159 @@
       </svg>
     </button>
     
+    <!-- Previous Chapter Button -->
     <button class="nav-button" @click="prevChapter()">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="24" height="24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3">
         <path d="M10 6 L4 16 10 26 M2 16 L30 16"></path>
       </svg>
     </button>
     
+    <!-- Next Chapter Button -->
     <button class="nav-button" @click="nextChapter()">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="24" height="24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3">
+      <svg xmlns="http://www.w3.org2000/svg" viewBox="0 0 32 32" width="24" height="24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3">
         <path d="M22 6 L30 16 22 26 M30 16 L4 16"></path>
       </svg>
     </button>
+    
+    <!-- NEW: More Options Button (visible on mobile only) -->
+    <button class="more-button" @click="moreOpen = !moreOpen" title="More Options">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="24" height="24" fill="none" stroke="currentColor">
+        <circle cx="8" cy="16" r="2"></circle>
+        <circle cx="16" cy="16" r="2"></circle>
+        <circle cx="24" cy="16" r="2"></circle>
+      </svg>
+    </button>
+  </div>
+  
+  <!-- NEW: More Options Dropdown (mobile only) -->
+  <div class="dropdown more-dropdown" x-show="moreOpen" @click.outside="moreOpen = false" x-transition>
+    <div class="dropdown-header">More Options</div>
+    <button class="dropdown-item" @click="patternsOpen = true; moreOpen = false">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="18" height="18" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+        <path d="M6 2 L26 2 26 22 6 22 Z M16 6 L16 18 M6 12 L26 12"></path>
+        <circle cx="12" cy="8" r="2"></circle>
+        <circle cx="20" cy="16" r="2"></circle>
+        <circle cx="12" cy="16" r="2"></circle>
+      </svg>
+      <span>Chapter Patterns</span>
+    </button>
+    <button class="dropdown-item" @click="fontsOpen = true; moreOpen = false">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="18" height="18" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3">
+        <path d="M13 2 L13 6 11 7 8 4 4 8 7 11 6 13 2 13 2 19 6 19 7 21 4 24 8 28 11 25 13 26 13 30 19 30 19 26 21 25 24 28 28 24 25 21 26 19 30 19 30 13 26 13 25 11 28 8 24 4 21 7 19 6 19 2 Z"></path>
+        <circle cx="16" cy="16" r="4"></circle>
+      </svg>
+      <span>Font Settings</span>
+    </button>
+    <button class="dropdown-item" @click="findReplaceOpen = true; moreOpen = false">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="18" height="18" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="4">
+        <circle cx="14" cy="14" r="12"></circle>
+        <path d="M23 23 L30 30"></path>
+      </svg>
+      <span>Find & Replace</span>
+    </button>
+    <button class="dropdown-item" @click="toggleTheme(); moreOpen = false">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor">
+        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+      </svg>
+      <span>Toggle Theme</span>
+    </button>
+  </div>
+  
+  <!-- Chapter Patterns Configuration Dropdown - REMOVED INLINE WIDTH STYLE -->
+  <div class="dropdown" x-show="patternsOpen" @click.outside="patternsOpen = false" x-transition>
+    <div class="dropdown-header">
+      Chapter Detection Patterns
+      <button class="mode-toggle" @click="window.testCurrentPatterns()" title="Test patterns">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"></path>
+        </svg>
+      </button>
+    </div>
+    <div class="patterns-config">
+      <div class="pattern-group">
+        <h4>Japanese Patterns</h4>
+        <div class="pattern-checkbox">
+          <input type="checkbox" id="pattern-jp-chapter" data-pattern="第\s*\d+\s*章" checked>
+          <label for="pattern-jp-chapter">第X章 (Chapter X)</label>
+        </div>
+        <div class="pattern-checkbox">
+          <input type="checkbox" id="pattern-jp-episode" data-pattern="エピソード\s*\d+" checked>
+          <label for="pattern-jp-episode">エピソードX (Episode X)</label>
+        </div>
+        <div class="pattern-checkbox">
+          <input type="checkbox" id="pattern-jp-number" data-pattern="^\s*\d+(?:\.\d+)*\s*[\.\s]" checked>
+          <label for="pattern-jp-number">1. or 1-1 (Numbered)</label>
+        </div>
+        <div class="pattern-checkbox">
+          <input type="checkbox" id="pattern-jp-extra" data-pattern="閑話|外伝|特別編" checked>
+          <label for="pattern-jp-extra">閑話・外伝・特別編 (Extra)</label>
+        </div>
+      </div>
+      
+      <div class="pattern-group">
+        <h4>Korean Patterns</h4>
+        <div class="pattern-checkbox">
+          <input type="checkbox" id="pattern-ko-chapter" data-pattern="제\s*\d+\s*화" checked>
+          <label for="pattern-ko-chapter">제X화 (Chapter X)</label>
+        </div>
+        <div class="pattern-checkbox">
+          <input type="checkbox" id="pattern-ko-extra" data-pattern="외전\s*\d+\s*화" checked>
+          <label for="pattern-ko-extra">외전X화 (Extra Chapter)</label>
+        </div>
+        <div class="pattern-checkbox">
+          <input type="checkbox" id="pattern-ko-number" data-pattern="^\s*\d+화\b" checked>
+          <label for="pattern-ko-number">X화 (Numbered)</label>
+        </div>
+      </div>
+      
+      <div class="pattern-group">
+        <h4>Chinese Patterns</h4>
+        <div class="pattern-checkbox">
+          <input type="checkbox" id="pattern-zh-chapter" data-pattern="第\s*[一二三四五六七八九十百千零\d]+\s*章" checked>
+          <label for="pattern-zh-chapter">第X章 (Chapter X)</label>
+        </div>
+        <div class="pattern-checkbox">
+          <input type="checkbox" id="pattern-zh-volume" data-pattern="卷\s*[一二三四五六七八九十百千零\d]+" checked>
+          <label for="pattern-zh-volume">卷X (Volume X)</label>
+        </div>
+        <div class="pattern-checkbox">
+          <input type="checkbox" id="pattern-zh-extra" data-pattern="外傳|番外|特別篇" checked>
+          <label for="pattern-zh-extra">外傳・番外・特別篇 (Extra)</label>
+        </div>
+      </div>
+      
+      <div class="pattern-group">
+        <h4>English/Universal</h4>
+        <div class="pattern-checkbox">
+          <input type="checkbox" id="pattern-en-chapter" data-pattern="Chapter\s+\d+" checked>
+          <label for="pattern-en-chapter">Chapter X</label>
+        </div>
+        <div class="pattern-checkbox">
+          <input type="checkbox" id="pattern-en-episode" data-pattern="Episode\s+\d+" checked>
+          <label for="pattern-en-episode">Episode X</label>
+        </div>
+        <div class="pattern-checkbox">
+          <input type="checkbox" id="pattern-en-prologue" data-pattern="Prologue|Epilogue" checked>
+          <label for="pattern-en-prologue">Prologue/Epilogue</label>
+        </div>
+        <div class="pattern-checkbox">
+          <input type="checkbox" id="pattern-en-number" data-pattern="^\s*\d+\.\s" checked>
+          <label for="pattern-en-number">1. Title (Numbered)</label>
+        </div>
+      </div>
+      
+      <div class="custom-patterns">
+        <h4>Custom Patterns (Regex)</h4>
+        <textarea id="customPatterns" class="custom-pattern-input" rows="3" placeholder="Add your own regex patterns, one per line"></textarea>
+        <button class="reset-button" style="width: 100%;" onclick="window.savePatterns()">Save Patterns</button>
+      </div>
+      
+      <div class="pattern-test-area">
+        <div class="pattern-test-title">Pattern Test Results:</div>
+        <div id="patternTestResults">Load a file and click test to see matches</div>
+      </div>
+    </div>
   </div>
   
   <!-- Table of Contents Dropdown -->
@@ -927,7 +1304,7 @@
     </div>
   </div>
   
-  <!-- Find & Replace / Find on Page Dropdown - FIXED WITH @click.stop -->
+  <!-- Find & Replace / Find on Page Dropdown -->
   <div class="dropdown" x-show="findReplaceOpen" @click.outside="findReplaceOpen = false" x-transition>
     <div class="dropdown-header">
       <span x-text="findMode === 'replace' ? 'Find & Replace' : 'Find on Page'"></span>
@@ -961,7 +1338,7 @@
       <button class="reset-button" id="clearFindReplace" style="margin-top: 10px;">Clear Find & Replace Rules</button>
     </div>
     
-    <!-- Find on Page Panel - FIXED WITH @click.stop -->
+    <!-- Find on Page Panel -->
     <div x-show="findMode === 'find'" class="find-on-page-container">
       <div class="find-input-group">
         <input type="text" id="findInput" class="find-input" placeholder="Search in current chapter..." @keyup.enter="window.findInPage()">
@@ -969,14 +1346,14 @@
       </div>
       
       <div class="find-results" id="findResults">
-		  Enter a search term above
-	  </div>
+        Enter a search term above
+      </div>
 
-		<div class="find-navigation" id="findNavigation" style="display: none;">  
-		 <button class="find-nav-button" @click.stop.prevent="window.prevFindResult()">← Previous</button>  
-		 <button class="find-nav-button" @click.stop.prevent="window.nextFindResult()">Next →</button>  
-		 <button class="find-nav-button" @click.stop.prevent="window.clearHighlights()">Clear</button>  
-		</div>
+      <div class="find-navigation" id="findNavigation" style="display: none;">  
+        <button class="find-nav-button" @click.stop.prevent="window.prevFindResult()">← Previous</button>  
+        <button class="find-nav-button" @click.stop.prevent="window.nextFindResult()">Next →</button>  
+        <button class="find-nav-button" @click.stop.prevent="window.clearHighlights()">Clear</button>  
+      </div>
     </div>
   </div>
 </div>
@@ -1010,1130 +1387,1447 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js"></script>
 <script>
-  // ============================================
-  // GLOBAL VARIABLES
-  // ============================================
-  window.chapters = [];
-  window.originalChapters = []; // Store original unmodified chapters
-  window.currentIndex = 0;
-  window.navVisible = true;
+// ============================================
+// GLOBAL VARIABLES (FROM YOUR ORIGINAL CODE)
+// ============================================
+window.chapters = [];
+window.originalChapters = []; // Store original unmodified chapters
+window.currentIndex = 0;
+window.navVisible = true;
+window.findReplaceRules = [];
+window.currentFileData = null;
+window.autoSaveInterval = null;
+
+// Find on page variables - MADE GLOBAL
+window.findResults = [];
+window.currentFindIndex = -1;
+window.findTerm = '';
+
+// DOM Elements (FROM YOUR ORIGINAL CODE)
+const navContainer = document.getElementById("navContainer");
+const pullToRefreshIndicator = document.getElementById("pullToRefreshIndicator");
+const bookmarkIndicator = document.getElementById("bookmarkIndicator");
+const statusIndicator = document.getElementById("statusIndicator");
+const loadingSpinner = document.getElementById("loadingSpinner");
+const loadingText = document.getElementById("loadingText");
+const chapterContent = document.getElementById("chapter-content");
+const copyBtn = document.getElementById("copyBtn");
+const copyTooltip = document.getElementById("copyTooltip");
+const modeToggleBtn = document.getElementById("modeToggleBtn");
+const chapterDropdown = document.getElementById("chapterDropdown");
+const fileInput = document.getElementById("fileInput");
+const findReplaceInput = document.getElementById("findReplaceInput");
+const findReplaceStatus = document.getElementById("findReplaceStatus");
+const currentRules = document.getElementById("currentRules");
+const clearFindReplaceBtn = document.getElementById("clearFindReplace");
+const findInput = document.getElementById("findInput");
+const findResultsElement = document.getElementById("findResults");
+const fontSizeRange = document.getElementById("fontSizeRange");
+const fontSizeInput = document.getElementById("fontSizeInput");
+const lineHeightRange = document.getElementById("lineHeightRange");
+const lineHeightInput = document.getElementById("lineHeightInput");
+const fontButtons = document.querySelectorAll(".font-button");
+const resetSettingsBtn = document.getElementById("resetSettings");
+const clearCacheBtn = document.getElementById("clearCacheBtn");
+
+// ============================================
+// ENHANCED CHAPTER DETECTION SYSTEM (NEW)
+// ============================================
+
+// Global pattern configuration
+window.chapterPatterns = {
+  enabled: {
+    'jp-chapter': true,
+    'jp-episode': true,
+    'jp-number': true,
+    'jp-extra': true,
+    'ko-chapter': true,
+    'ko-extra': true,
+    'ko-number': true,
+    'zh-chapter': true,
+    'zh-volume': true,
+    'zh-extra': true,
+    'en-chapter': true,
+    'en-episode': true,
+    'en-prologue': true,
+    'en-number': true
+  },
+  customPatterns: []
+};
+
+// Load saved patterns from localStorage
+function loadPatterns() {
+  const saved = localStorage.getItem('novelReaderPatterns');
+  if (saved) {
+    try {
+      const config = JSON.parse(saved);
+      window.chapterPatterns.enabled = config.enabled || window.chapterPatterns.enabled;
+      window.chapterPatterns.customPatterns = config.customPatterns || [];
+      
+      // Update checkboxes
+      Object.keys(window.chapterPatterns.enabled).forEach(id => {
+        const checkbox = document.getElementById(`pattern-${id}`);
+        if (checkbox) {
+          checkbox.checked = window.chapterPatterns.enabled[id];
+        }
+      });
+      
+      // Update custom patterns textarea
+      const customTextarea = document.getElementById('customPatterns');
+      if (customTextarea) {
+        customTextarea.value = window.chapterPatterns.customPatterns.join('\n');
+      }
+    } catch (e) {
+      console.error('Error loading patterns:', e);
+    }
+  }
+}
+
+// Save patterns to localStorage
+window.savePatterns = function() {
+  // Update from checkboxes
+  Object.keys(window.chapterPatterns.enabled).forEach(id => {
+    const checkbox = document.getElementById(`pattern-${id}`);
+    if (checkbox) {
+      window.chapterPatterns.enabled[id] = checkbox.checked;
+    }
+  });
+  
+  // Update custom patterns
+  const customTextarea = document.getElementById('customPatterns');
+  if (customTextarea) {
+    window.chapterPatterns.customPatterns = customTextarea.value
+      .split('\n')
+      .map(p => p.trim())
+      .filter(p => p.length > 0);
+  }
+  
+  localStorage.setItem('novelReaderPatterns', JSON.stringify(window.chapterPatterns));
+  showStatusIndicator('Patterns saved');
+  
+  // If we have text loaded, re-process it
+  if (window.originalChapters && window.originalChapters.length > 0) {
+    window.reprocessWithNewPatterns();
+  }
+};
+
+// Build the combined regex pattern from enabled patterns
+function buildChapterPattern() {
+  const patterns = [];
+  
+  // Add enabled built-in patterns
+  const patternMap = {
+    'jp-chapter': '第\\s*\\d+\\s*章',
+    'jp-episode': 'エピソード\\s*\\d+',
+    'jp-number': '^\\s*\\d+(?:\\.\\d+)*\\s*[\\.\\s]',
+    'jp-extra': '閑話|外伝|特別編',
+    'ko-chapter': '제\\s*\\d+\\s*화',
+    'ko-extra': '외전\\s*\\d+\\s*화',
+    'ko-number': '^\\s*\\d+화\\b',
+    'zh-chapter': '第\\s*[一二三四五六七八九十百千零\\d]+\\s*章',
+    'zh-volume': '卷\\s*[一二三四五六七八九十百千零\\d]+',
+    'zh-extra': '外傳|番外|特別篇',
+    'en-chapter': 'Chapter\\s+\\d+',
+    'en-episode': 'Episode\\s+\\d+',
+    'en-prologue': 'Prologue|Epilogue',
+    'en-number': '^\\s*\\d+\\.\\s'
+  };
+  
+  Object.entries(patternMap).forEach(([id, pattern]) => {
+    if (window.chapterPatterns.enabled[id]) {
+      patterns.push(pattern);
+    }
+  });
+  
+  // Add custom patterns
+  window.chapterPatterns.customPatterns.forEach(pattern => {
+    patterns.push(pattern);
+  });
+  
+  if (patterns.length === 0) {
+    // Fallback to detect lines that look like chapter titles
+    return /^(\s*)(?:(?:第[一二三四五六七八九十百千零\d]+\s*章)|(?:Chapter\s+\d+)|(?:제\s*\d+\s*화)|(?:\d+\.\s+.*)|(?:[A-Z][A-Za-z\s]+:))/;
+  }
+  
+  // Combine patterns with OR operator
+  const combinedPattern = patterns.map(p => `(${p})`).join('|');
+  return new RegExp(`^\\s*(?:${combinedPattern})`, 'i');
+}
+
+// Enhanced chapter detection with configurable patterns
+function detectChaptersEnhanced(text) {
+  const lines = text.split('\n');
+  const chapterPositions = [];
+  const pattern = buildChapterPattern();
+  
+  // First pass: find all potential chapter starts
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    
+    // Check if this line matches any chapter pattern
+    if (pattern.test(line)) {
+      // Additional validation: chapter titles are usually short
+      if (line.length < 200) {
+        // Calculate position in original text
+        let position = 0;
+        for (let j = 0; j < i; j++) {
+          position += lines[j].length + 1; // +1 for newline
+        }
+        chapterPositions.push({
+          position: position,
+          line: line,
+          lineNumber: i
+        });
+      }
+    }
+  }
+  
+  // Second pass: filter out false positives (e.g., numbers in the middle of paragraphs)
+  const filteredPositions = [];
+  for (let i = 0; i < chapterPositions.length; i++) {
+    const current = chapterPositions[i];
+    const isLikelyChapter = isLikelyChapterStart(lines, current.lineNumber);
+    
+    if (isLikelyChapter) {
+      filteredPositions.push(current.position);
+    }
+  }
+  
+  return filteredPositions;
+}
+
+// Helper: Determine if a line is likely a chapter start
+function isLikelyChapterStart(lines, lineNumber) {
+  if (lineNumber >= lines.length) return false;
+  
+  const line = lines[lineNumber].trim();
+  const prevLine = lineNumber > 0 ? lines[lineNumber - 1].trim() : '';
+  const nextLine = lineNumber < lines.length - 1 ? lines[lineNumber + 1].trim() : '';
+  
+  // A chapter title is usually:
+  // 1. Not too long (less than 200 chars)
+  // 2. Often followed by empty line or short text
+  // 3. Not in the middle of a paragraph
+  // 4. May have special formatting (contains numbers, specific keywords)
+  
+  // Check for common false positives
+  const falsePositives = [
+    /^\d+$/, // Just a number on its own
+    /^\d+\/\d+\/\d+/, // Dates
+    /^[A-Za-z]\d+$/, // Single letter with number
+    /^[+-]?\d+[,.]?\d*$/, // Standalone numbers
+    /^(?:Mr|Mrs|Ms|Dr)\./, // Titles
+    /^[A-Z]\.[A-Z]\./, // Initials,
+  ];
+  
+  // If it's a false positive, skip
+  for (const fp of falsePositives) {
+    if (fp.test(line)) return false;
+  }
+  
+  // Check context
+  if (prevLine.length > 0 && !/[:.;!?]$/.test(prevLine)) {
+    // Previous line doesn't end with punctuation, might be mid-paragraph
+    return false;
+  }
+  
+  return true;
+}
+
+// Reprocess current text with new patterns
+window.reprocessWithNewPatterns = function() {
+  if (!window.originalChapters || window.originalChapters.length === 0) {
+    showStatusIndicator('No text loaded');
+    return;
+  }
+  
+  // Reconstruct the original text
+  const originalText = window.originalChapters.join('\n\n');
+  
+  // Detect chapters with new patterns
+  const chapterPositions = detectChaptersEnhanced(originalText);
+  
+  if (chapterPositions.length === 0) {
+    // Fallback: treat entire text as one chapter
+    window.chapters = [originalText];
+  } else {
+    // Split text at chapter positions
+    window.chapters = [];
+    for (let i = 0; i < chapterPositions.length; i++) {
+      const start = chapterPositions[i];
+      const end = (i < chapterPositions.length - 1) ? chapterPositions[i + 1] : originalText.length;
+      const chapterText = originalText.substring(start, end).trim();
+      if (chapterText) {
+        window.chapters.push(chapterText);
+      }
+    }
+  }
+  
+  // Apply find & replace if any rules exist
+  if (window.findReplaceRules.length > 0) {
+    applyFindReplaceToChapters();
+  }
+  
+  // Update UI
+  populateDropdown();
+  window.currentIndex = Math.min(window.currentIndex, window.chapters.length - 1);
+  renderChapter();
+  updateDropdownHighlight();
+  showStatusIndicator('Re-processed with new patterns');
+};
+
+// Test current patterns on sample text
+window.testCurrentPatterns = function() {
+  if (!window.originalChapters || window.originalChapters.length === 0) {
+    showStatusIndicator('Load a file first');
+    return;
+  }
+  
+  // Use first few chapters for testing
+  const sampleText = window.originalChapters.slice(0, 3).join('\n\n');
+  const lines = sampleText.split('\n');
+  const pattern = buildChapterPattern();
+  const matches = [];
+  
+  // Find matches in first 50 lines
+  for (let i = 0; i < Math.min(lines.length, 50); i++) {
+    const line = lines[i].trim();
+    if (pattern.test(line)) {
+      matches.push({
+        lineNumber: i + 1,
+        text: line.length > 50 ? line.substring(0, 50) + '...' : line,
+        isLikely: isLikelyChapterStart(lines, i)
+      });
+    }
+  }
+  
+  // Display results
+  const resultsDiv = document.getElementById('patternTestResults');
+  if (matches.length === 0) {
+    resultsDiv.innerHTML = '<span style="color: var(--red)">No matches found with current patterns</span>';
+  } else {
+    const html = matches.map(m => 
+      `<div class="pattern-match" title="Line ${m.lineNumber}: ${m.isLikely ? 'Likely chapter' : 'Possible false positive'}">
+        ${m.text}
+      </div>`
+    ).join(' ');
+    resultsDiv.innerHTML = `Found ${matches.length} potential chapter starts:<br>${html}`;
+  }
+};
+
+// ============================================
+// MODIFIED TEXT PROCESSING FUNCTION (REPLACES OLD ONE)
+// ============================================
+
+function processText(text) {
+  text = text.replace(/\r\n/g, '\n');
+  
+  // Use enhanced chapter detection
+  const chapterPositions = detectChaptersEnhanced(text);
+  
+  if (chapterPositions.length > 0) {
+    window.chapters = [];
+    window.originalChapters = [];
+    
+    // Add content before first chapter
+    if (chapterPositions[0] > 0) {
+      const firstChapter = text.substring(0, chapterPositions[0]).trim();
+      if (firstChapter) {
+        window.chapters.push(firstChapter);
+        window.originalChapters.push(firstChapter);
+      }
+    }
+    
+    // Split at detected chapter positions
+    for (let i = 0; i < chapterPositions.length; i++) {
+      const start = chapterPositions[i];
+      const end = (i < chapterPositions.length - 1) ? chapterPositions[i + 1] : text.length;
+      const chapterText = text.substring(start, end).trim();
+      if (chapterText) {
+        window.chapters.push(chapterText);
+        window.originalChapters.push(chapterText);
+      }
+    }
+  } else {
+    // Fallback: try to detect by empty lines + patterns
+    window.chapters = splitByEmptyLines(text);
+    window.originalChapters = [...window.chapters];
+  }
+  
+  // Apply find & replace if any rules exist
+  if (window.findReplaceRules.length > 0) {
+    applyFindReplaceToChapters();
+  }
+  
+  populateDropdown();
+  
+  if (!loadBookmark()) {
+    window.currentIndex = 0;
+  }
+  
+  renderChapter();
+  updateDropdownHighlight();
+  startAutoSave();
+}
+
+// Fallback: Split by significant empty lines + pattern
+function splitByEmptyLines(text) {
+  const paragraphs = text.split(/\n\s*\n/);
+  const chapters = [];
+  let currentChapter = '';
+  const minChapterLength = 500; // Minimum characters per chapter
+  
+  for (const para of paragraphs) {
+    const trimmed = para.trim();
+    if (!trimmed) continue;
+    
+    // Check if this paragraph looks like a chapter start
+    const pattern = buildChapterPattern();
+    const looksLikeChapter = pattern.test(trimmed.split('\n')[0]);
+    
+    if (looksLikeChapter && currentChapter.length > minChapterLength) {
+      chapters.push(currentChapter);
+      currentChapter = trimmed;
+    } else {
+      if (currentChapter) currentChapter += '\n\n';
+      currentChapter += trimmed;
+    }
+  }
+  
+  if (currentChapter) {
+    chapters.push(currentChapter);
+  }
+  
+  return chapters.length > 0 ? chapters : [text];
+}
+
+// ============================================
+// YOUR ORIGINAL FUNCTIONS (KEEP ALL OF THESE)
+// ============================================
+
+// Function to clear all cache and data
+function clearAllCache() {
+  // Clear cached files
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key && key.startsWith('novelReaderCache_')) {
+      localStorage.removeItem(key);
+    }
+  }
+  
+  // Clear bookmark
+  localStorage.removeItem('novelReaderBookmark');
+  
+  // Clear find & replace rules from memory
   window.findReplaceRules = [];
+  updateFindReplaceStatus(false, 'Find & replace rules cleared');
+  updateCurrentRulesDisplay();
+  
+  // Reset the current state
+  window.chapters = [];
+  window.originalChapters = [];
+  window.currentIndex = 0;
   window.currentFileData = null;
-  window.autoSaveInterval = null;
   
-  // Find on page variables - MADE GLOBAL
-  window.findResults = [];
+  // Stop auto-save interval
+  if (window.autoSaveInterval) {
+    clearInterval(window.autoSaveInterval);
+    window.autoSaveInterval = null;
+  }
+  
+  // Reset the UI
+  chapterContent.innerHTML = `
+    <article>
+      <p><em>Load a .txt or .docx file to begin.</em></p>
+      <p><strong>Cache cleared!</strong> All cached files, bookmarks, and find & replace rules have been removed.</p>
+    </article>
+  `;
+  
+  chapterDropdown.innerHTML = '';
+  
+  // Clear file inputs
+  fileInput.value = '';
+  findReplaceInput.value = '';
+  
+  // Show success message
+  showStatusIndicator('Cache cleared');
+}
+
+// FIND ON PAGE FUNCTIONS (FROM YOUR ORIGINAL CODE)
+window.findInPage = function() {
+  const term = findInput.value.trim();
+  const findNavigation = document.getElementById("findNavigation");
+
+  if (!term) {
+    findResultsElement.textContent = 'Please enter a search term';
+    if(findNavigation) findNavigation.style.display = 'none';
+    return;
+  }
+
+  // Store the term globally and clear old state
+  window.findTerm = term;
+  window.clearHighlights(false); // Clear highlights without resetting search vars
+
+  // Get the current chapter text
+  if (!window.chapters.length || window.currentIndex >= window.chapters.length) {
+    findResultsElement.textContent = 'No chapter loaded';
+    return;
+  }
+
+  const chapterText = window.chapters[window.currentIndex];
+
+  // Create a case-insensitive regex
+  const regex = new RegExp(escapeRegExp(term), 'gi');
+
+  // Find all matches
+  const matches = [];
+  let match;
+  while ((match = regex.exec(chapterText)) !== null) {
+    matches.push({
+      start: match.index,
+      end: match.index + match[0].length,
+      text: match[0]
+    });
+  }
+
+  window.findResults = matches;
   window.currentFindIndex = -1;
-  window.findTerm = '';
+
+  if (window.findResults.length === 0) {
+    findResultsElement.textContent = `No results found for "${term}"`;
+    if(findNavigation) findNavigation.style.display = 'none';
+    // Re-render the chapter without highlights
+    renderChapter(); 
+    return;
+  }
+
+  // Update results display
+  findResultsElement.textContent = `Found ${window.findResults.length} result(s)`;
+  if(findNavigation) findNavigation.style.display = 'flex'; // Show buttons
+
+  // Highlight all matches and navigate to first result
+  window.highlightAllMatches();
+  window.nextFindResult();
+};
+
+window.highlightAllMatches = function() {
+  if (!window.findTerm || window.findResults.length === 0) return;
+
+  const chapterText = window.chapters[window.currentIndex];
+
+  // Create highlighted HTML
+  let highlightedHTML = '';
+  let lastIndex = 0;
+
+  // Process each match
+  window.findResults.forEach((result, index) => {
+    // Add text before match, escaped
+    highlightedHTML += escapeHtml(chapterText.substring(lastIndex, result.start));
+
+    // Add highlighted match (using 'match-index' for navigation)
+    const matchText = chapterText.substring(result.start, result.end);
+    // CRITICAL: Added an ID for faster lookup during navigation
+    highlightedHTML += `<span class="highlight" id="match-${index}" data-match-index="${index}">${escapeHtml(matchText)}</span>`;
+
+    lastIndex = result.end;
+  });
+
+  // Add remaining text after last match, escaped
+  highlightedHTML += escapeHtml(chapterText.substring(lastIndex));
+
+  // Convert the highlighted text into paragraphs, preserving the spans
+  chapterContent.innerHTML = convertToParagraphsWithHighlights(highlightedHTML);
+};
+
+// NEW/FIXED Helper: Handles rendering text containing <span> tags into paragraphs
+function convertToParagraphsWithHighlights(text) {
+  // Split by double newlines (paragraphs)
+  const paragraphs = text.split(/\n\s*\n/);
+
+  return paragraphs.map((p, index) => {
+    const trimmed = p.trim();
+    if (!trimmed) return '';
+
+    // Split into lines for <br> tags
+    const lines = trimmed.split('\n');
+
+    // Logic for the first paragraph's bold title
+    if (index === 0 && lines.length > 0) {
+      const firstLine = lines[0];
+      const remainingLines = lines.slice(1);
+
+      // Check if first line contains highlight spans or is too long for a title
+      if (firstLine.includes('<span class="highlight') || firstLine.length > 100) {
+        // Already highlighted or too long, just use <br> for lines
+        return `<p>${lines.join('<br>')}</p>`;
+      } else {
+        // Wrap first line in <strong>, then join with remaining lines using <br>
+        const firstLineHtml = `<strong>${firstLine}</strong>`;
+        if (remainingLines.length > 0) {
+          return `<p>${firstLineHtml}<br>${remainingLines.join('<br>')}</p>`;
+        } else {
+          return `<p>${firstLineHtml}</p>`;
+        }
+      }
+    } else {
+      // Regular paragraph, join lines with <br>
+      return `<p>${lines.join('<br>')}</p>`;
+    }
+  }).join('');
+}
+
+window.navigateToFindResult = function(index) {
+  if (window.findResults.length === 0) return;
   
-  // DOM Elements
-  const navContainer = document.getElementById("navContainer");
-  const pullToRefreshIndicator = document.getElementById("pullToRefreshIndicator");
-  const bookmarkIndicator = document.getElementById("bookmarkIndicator");
-  const statusIndicator = document.getElementById("statusIndicator");
-  const loadingSpinner = document.getElementById("loadingSpinner");
-  const loadingText = document.getElementById("loadingText");
-  const chapterContent = document.getElementById("chapter-content");
-  const copyBtn = document.getElementById("copyBtn");
-  const copyTooltip = document.getElementById("copyTooltip");
-  const modeToggleBtn = document.getElementById("modeToggleBtn");
-  const chapterDropdown = document.getElementById("chapterDropdown");
-  const fileInput = document.getElementById("fileInput");
-  const findReplaceInput = document.getElementById("findReplaceInput");
-  const findReplaceStatus = document.getElementById("findReplaceStatus");
-  const currentRules = document.getElementById("currentRules");
-  const clearFindReplaceBtn = document.getElementById("clearFindReplace");
-  const findInput = document.getElementById("findInput");
-  const findResultsElement = document.getElementById("findResults");
-  const fontSizeRange = document.getElementById("fontSizeRange");
-  const fontSizeInput = document.getElementById("fontSizeInput");
-  const lineHeightRange = document.getElementById("lineHeightRange");
-  const lineHeightInput = document.getElementById("lineHeightInput");
-  const fontButtons = document.querySelectorAll(".font-button");
-  const resetSettingsBtn = document.getElementById("resetSettings");
-  const clearCacheBtn = document.getElementById("clearCacheBtn");
+  // Wrap around logic
+  if (index >= window.findResults.length) index = 0;
+  if (index < 0) index = window.findResults.length - 1;
 
-  // ============================================
-  // NEW: SIMPLE CACHE CLEARING FUNCTION
-  // ============================================
+  window.currentFindIndex = index;
 
-  // Function to clear all cache and data
-  function clearAllCache() {
-    // Clear cached files
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key && key.startsWith('novelReaderCache_')) {
+  // Remove current highlight class from previous match
+  const previousActive = chapterContent.querySelector('.current-highlight');
+  if (previousActive) previousActive.classList.remove('current-highlight');
+
+  // Add current highlight class to the target match
+  const currentHighlight = document.getElementById(`match-${index}`);
+  if (currentHighlight) {
+    currentHighlight.classList.add('current-highlight');
+
+    // Scroll to the highlighted element
+    currentHighlight.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center'
+    });
+  }
+
+  // Update results display
+  findResultsElement.textContent = `Result ${index + 1} of ${window.findResults.length} for "${window.findTerm}"`;
+};
+
+window.nextFindResult = function() {
+  if (window.findResults.length === 0) return;
+  let nextIndex = window.currentFindIndex + 1;
+  window.navigateToFindResult(nextIndex);
+};
+
+window.prevFindResult = function() {
+  if (window.findResults.length === 0) return;
+  let prevIndex = window.currentFindIndex - 1;
+  window.navigateToFindResult(prevIndex);
+};
+
+// The resetFindState flag is used to prevent the chapter from re-rendering during search preparation
+window.clearHighlights = function(resetFindState = true) {
+  const findNavigation = document.getElementById("findNavigation");
+
+  if (resetFindState) {
+    // Reset all search state variables
+    window.findResults = [];
+    window.currentFindIndex = -1;
+    window.findTerm = '';
+    if(findInput) findInput.value = '';
+
+    findResultsElement.textContent = 'Enter a search term above';
+    if(findNavigation) findNavigation.style.display = 'none';
+  } else {
+    // Only clear active highlight class if we are preparing a new search
+    const activeHighlight = chapterContent.querySelector('.current-highlight');
+    if (activeHighlight) activeHighlight.classList.remove('current-highlight');
+  }
+
+  // Re-render the chapter without highlights if we reset the state
+  if (resetFindState && window.chapters.length > 0) {
+    renderChapter();
+  }
+};
+
+// Helper function for regex escaping
+function escapeRegExp(string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+// Ensure the HTML escaping function is correctly defined
+function escapeHtml(text) {
+  if (typeof text !== 'string') return '';
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+// REST OF YOUR ORIGINAL FUNCTIONS
+// Click anywhere to toggle nav
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.nav-container') && !e.target.closest('.dropdown')) {
+    window.navVisible = !window.navVisible;
+    navContainer.style.display = window.navVisible ? 'block' : 'none';
+  }
+});
+
+// Pull-to-refresh variables
+let startY = 0;
+let currentY = 0;
+let isRefreshing = false;
+
+// Pull-to-refresh event listeners
+document.addEventListener('touchstart', handleTouchStart, { passive: false });
+document.addEventListener('touchmove', handleTouchMove, { passive: false });
+document.addEventListener('touchend', handleTouchEnd);
+
+// Event listeners
+fileInput.addEventListener("change", handleFile);
+modeToggleBtn.addEventListener("click", toggleTheme);
+findReplaceInput.addEventListener("change", handleFindReplaceFile);
+clearFindReplaceBtn.addEventListener("click", clearFindReplaceRules);
+clearCacheBtn.addEventListener("click", clearAllCache);
+
+// Font settings event listeners
+fontSizeRange.addEventListener("input", () => {
+  fontSizeInput.value = fontSizeRange.value;
+  updateFontSize();
+});
+
+fontSizeInput.addEventListener("input", () => {
+  fontSizeRange.value = fontSizeInput.value;
+  updateFontSize();
+});
+
+lineHeightRange.addEventListener("input", () => {
+  lineHeightInput.value = lineHeightRange.value;
+  updateLineHeight();
+});
+
+lineHeightInput.addEventListener("input", () => {
+  lineHeightRange.value = lineHeightInput.value;
+  updateLineHeight();
+});
+
+fontButtons.forEach(button => {
+  button.addEventListener("click", () => {
+    const fontFamily = button.getAttribute("data-font");
+    chapterContent.style.fontFamily = fontFamily;
+    
+    // Update active state
+    fontButtons.forEach(btn => btn.classList.remove("active"));
+    button.classList.add("active");
+    
+    // Save to localStorage
+    localStorage.setItem('fontFamily', fontFamily);
+  });
+});
+
+resetSettingsBtn.addEventListener("click", resetSettings);
+
+// NEW: Theme toggle function (replaces dark mode toggle)
+function toggleTheme() {
+  const body = document.body;
+  
+  if (body.classList.contains('dark')) {
+    // If currently in dark mode, switch to warm mode
+    body.classList.remove('dark');
+    body.classList.add('warm');
+  } else if (body.classList.contains('warm')) {
+    // If currently in warm mode, switch to light mode
+    body.classList.remove('warm');
+  } else {
+    // If currently in light mode, switch to dark mode
+    body.classList.add('dark');
+  }
+  
+  // Save preference to localStorage
+  localStorage.setItem('theme', body.classList.toString());
+  updateModeButton();
+}
+
+// NEW: Updated mode button function
+function updateModeButton() {
+  const body = document.body;
+  const sunIcon = document.querySelector('.sun-icon');
+  const moonIcon = document.querySelector('.moon-icon');
+  const warmIcon = document.querySelector('.warm-icon');
+  
+  // Reset all icons
+  sunIcon.style.opacity = '0';
+  moonIcon.style.opacity = '0';
+  warmIcon.style.opacity = '0';
+  
+  if (body.classList.contains('dark')) {
+    moonIcon.style.opacity = '1';
+  } else if (body.classList.contains('warm')) {
+    warmIcon.style.opacity = '1';
+  } else {
+    sunIcon.style.opacity = '1';
+  }
+}
+
+// NEW: Show/hide loading spinner
+function showLoading(message = 'Loading...') {
+  loadingText.textContent = message;
+  loadingSpinner.classList.add('show');
+  chapterContent.classList.add('loading');
+}
+
+function hideLoading() {
+  loadingSpinner.classList.remove('show');
+  chapterContent.classList.remove('loading');
+}
+
+// Pull-to-refresh functions
+function handleTouchStart(e) {
+  if (window.scrollY === 0 && window.chapters.length > 0) {
+    startY = e.touches[0].clientY;
+    isRefreshing = true;
+  }
+}
+
+function handleTouchMove(e) {
+  if (!isRefreshing) return;
+  
+  currentY = e.touches[0].clientY;
+  const pullDistance = currentY - startY;
+  
+  if (pullDistance > 0) {
+    e.preventDefault();
+    const indicatorHeight = Math.min(pullDistance, 60);
+    pullToRefreshIndicator.style.transform = `translateY(${indicatorHeight - 60}px)`;
+    
+    if (pullDistance > 100) {
+      pullToRefreshIndicator.classList.add('active');
+    } else {
+      pullToRefreshIndicator.classList.remove('active');
+    }
+  }
+}
+
+function handleTouchEnd() {
+  if (!isRefreshing) return;
+  
+  const pullDistance = currentY - startY;
+  
+  if (pullDistance > 100) {
+    // Trigger refresh
+    pullToRefreshIndicator.textContent = "↻ Refreshing...";
+    setTimeout(() => {
+      renderChapter(); // Reload current chapter
+      pullToRefreshIndicator.textContent = "✓ Refreshed!";
+      setTimeout(() => {
+        pullToRefreshIndicator.classList.remove('active');
+        pullToRefreshIndicator.style.transform = 'translateY(-100%)';
+        pullToRefreshIndicator.textContent = "↻ Release to refresh current chapter";
+      }, 1000);
+    }, 500);
+  } else {
+    pullToRefreshIndicator.classList.remove('active');
+    pullToRefreshIndicator.style.transform = 'translateY(-100%)';
+  }
+  
+  isRefreshing = false;
+  startY = 0;
+  currentY = 0;
+}
+
+// Bookmarking functions
+function saveBookmark() {
+  if (window.chapters.length === 0) return;
+  
+  const bookmark = {
+    fileData: window.currentFileData,
+    currentIndex: window.currentIndex,
+    timestamp: Date.now()
+  };
+  
+  localStorage.setItem('novelReaderBookmark', JSON.stringify(bookmark));
+  showBookmarkIndicator();
+}
+
+function loadBookmark() {
+  const bookmarkData = localStorage.getItem('novelReaderBookmark');
+  if (!bookmarkData) return false;
+  
+  try {
+    const bookmark = JSON.parse(bookmarkData);
+    
+    // Check if we have the same file loaded (basic check)
+    if (window.currentFileData && bookmark.fileData) {
+      // For simplicity, we'll assume it's the same file if the user hasn't loaded a new one
+      window.currentIndex = bookmark.currentIndex;
+      renderChapter();
+      updateDropdownHighlight();
+      showStatusIndicator('Bookmark restored');
+      return true;
+    }
+  } catch (e) {
+    console.error('Error loading bookmark:', e);
+  }
+  
+  return false;
+}
+
+function showBookmarkIndicator() {
+  bookmarkIndicator.classList.add('show');
+  setTimeout(() => {
+    bookmarkIndicator.classList.remove('show');
+  }, 2000);
+}
+
+function showStatusIndicator(message) {
+  statusIndicator.textContent = message;
+  statusIndicator.classList.add('show');
+  setTimeout(() => {
+    statusIndicator.classList.remove('show');
+  }, 2000);
+}
+
+// Auto-save function - UPDATED to 5 minutes
+function startAutoSave() {
+  // Clear existing interval
+  if (window.autoSaveInterval) {
+    clearInterval(window.autoSaveInterval);
+  }
+  
+  // Save every 5 minutes (300,000 milliseconds)
+  window.autoSaveInterval = setInterval(() => {
+    if (window.chapters.length > 0) {
+      saveBookmark();
+      showStatusIndicator('Auto-saved');
+    }
+  }, 300000);
+}
+
+// FIXED: Simple hash function that works with Unicode characters
+function simpleHash(str) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32-bit integer
+  }
+  return Math.abs(hash).toString(36); // Convert to base36 string
+}
+
+// FIXED: Chapter caching with safe encoding
+function cacheChapters(fileData, processedChapters) {
+  // Use a simple hash instead of btoa to avoid encoding issues
+  const cacheKey = 'novelReaderCache_' + simpleHash(fileData.name + fileData.size + fileData.lastModified);
+  const cacheData = {
+    fileData: fileData,
+    chapters: processedChapters,
+    originalChapters: window.originalChapters, // Store original chapters
+    findReplaceRules: window.findReplaceRules, // Store find/replace rules too
+    timestamp: Date.now()
+  };
+  
+  try {
+    localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+  } catch (e) {
+    console.warn('Could not cache chapters:', e);
+    clearOldCache();
+  }
+}
+
+function getCachedChapters(fileData) {
+  // Use the same hash function
+  const cacheKey = 'novelReaderCache_' + simpleHash(fileData.name + fileData.size + fileData.lastModified);
+  const cachedData = localStorage.getItem(cacheKey);
+  
+  if (!cachedData) return null;
+  
+  try {
+    const cache = JSON.parse(cachedData);
+    // Check if cache is less than 1 hour old
+    if (Date.now() - cache.timestamp < 60 * 60 * 1000) {
+      // Restore everything from cache
+      window.originalChapters = cache.originalChapters || cache.chapters;
+      window.findReplaceRules = cache.findReplaceRules || [];
+      
+      // If we have find/replace rules, apply them to get the processed chapters
+      if (window.findReplaceRules.length > 0) {
+        window.chapters = [...window.originalChapters];
+        applyFindReplaceToChapters();
+        updateFindReplaceStatus(true, `Loaded ${window.findReplaceRules.length} find & replace rules from cache`);
+        updateCurrentRulesDisplay();
+      } else {
+        window.chapters = [...window.originalChapters];
+      }
+      
+      return window.chapters;
+    }
+  } catch (e) {
+    console.error('Error reading cache:', e);
+  }
+  
+  return null;
+}
+
+function clearOldCache() {
+  // Clear cache entries older than 24 hours
+  const now = Date.now();
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key && key.startsWith('novelReaderCache_')) {
+      try {
+        const cache = JSON.parse(localStorage.getItem(key));
+        if (now - cache.timestamp > 24 * 60 * 60 * 1000) {
+          localStorage.removeItem(key);
+        }
+      } catch (e) {
+        // If we can't parse it, remove it
         localStorage.removeItem(key);
       }
     }
-    
-    // Clear bookmark
-    localStorage.removeItem('novelReaderBookmark');
-    
-    // Clear find & replace rules from memory
-    window.findReplaceRules = [];
-    updateFindReplaceStatus(false, 'Find & replace rules cleared');
-    updateCurrentRulesDisplay();
-    
-    // Reset the current state
-    window.chapters = [];
-    window.originalChapters = [];
-    window.currentIndex = 0;
-    window.currentFileData = null;
-    
-    // Stop auto-save interval
-    if (window.autoSaveInterval) {
-      clearInterval(window.autoSaveInterval);
-      window.autoSaveInterval = null;
-    }
-    
-    // Reset the UI
-    chapterContent.innerHTML = `
-      <article>
-        <p><em>Load a .txt or .docx file to begin.</em></p>
-        <p><strong>Cache cleared!</strong> All cached files, bookmarks, and find & replace rules have been removed.</p>
-      </article>
-    `;
-    
-    chapterDropdown.innerHTML = '';
-    
-    // Clear file inputs
-    fileInput.value = '';
-    findReplaceInput.value = '';
-    
-    // Show success message
-    showStatusIndicator('Cache cleared');
   }
+}
 
-  // ============================================
-  // FIND ON PAGE FUNCTIONS (FIXED & INTEGRATED)
-  // ============================================
- 
-  // Make functions global so Alpine.js can access them
-  window.findInPage = function() {
-    const term = findInput.value.trim();
-    const findNavigation = document.getElementById("findNavigation");
+// FIND & REPLACE FUNCTIONS
+function handleFindReplaceFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
 
-    if (!term) {
-        findResultsElement.textContent = 'Please enter a search term';
-        if(findNavigation) findNavigation.style.display = 'none';
-        return;
-    }
-
-    // Store the term globally and clear old state
-    window.findTerm = term;
-    window.clearHighlights(false); // Clear highlights without resetting search vars
-
-    // Get the current chapter text
-    if (!window.chapters.length || window.currentIndex >= window.chapters.length) {
-        findResultsElement.textContent = 'No chapter loaded';
-        return;
-    }
-
-    const chapterText = window.chapters[window.currentIndex];
-
-    // Create a case-insensitive regex
-    const regex = new RegExp(escapeRegExp(term), 'gi');
-
-    // Find all matches
-    const matches = [];
-    let match;
-    while ((match = regex.exec(chapterText)) !== null) {
-        matches.push({
-            start: match.index,
-            end: match.index + match[0].length,
-            text: match[0]
-        });
-    }
-
-    window.findResults = matches;
-    window.currentFindIndex = -1;
-
-    if (window.findResults.length === 0) {
-        findResultsElement.textContent = `No results found for "${term}"`;
-        if(findNavigation) findNavigation.style.display = 'none';
-        // Re-render the chapter without highlights
-        renderChapter(); 
-        return;
-    }
-
-    // Update results display
-    findResultsElement.textContent = `Found ${window.findResults.length} result(s)`;
-    if(findNavigation) findNavigation.style.display = 'flex'; // Show buttons
-
-    // Highlight all matches and navigate to first result
-    window.highlightAllMatches();
-    window.nextFindResult();
-  };
-
-  window.highlightAllMatches = function() {
-    if (!window.findTerm || window.findResults.length === 0) return;
-
-    const chapterText = window.chapters[window.currentIndex];
-
-    // Create highlighted HTML
-    let highlightedHTML = '';
-    let lastIndex = 0;
-
-    // Process each match
-    window.findResults.forEach((result, index) => {
-        // Add text before match, escaped
-        highlightedHTML += escapeHtml(chapterText.substring(lastIndex, result.start));
-
-        // Add highlighted match (using 'match-index' for navigation)
-        const matchText = chapterText.substring(result.start, result.end);
-        // CRITICAL: Added an ID for faster lookup during navigation
-        highlightedHTML += `<span class="highlight" id="match-${index}" data-match-index="${index}">${escapeHtml(matchText)}</span>`;
-
-        lastIndex = result.end;
-    });
-
-    // Add remaining text after last match, escaped
-    highlightedHTML += escapeHtml(chapterText.substring(lastIndex));
-
-    // Convert the highlighted text into paragraphs, preserving the spans
-    chapterContent.innerHTML = convertToParagraphsWithHighlights(highlightedHTML);
-  };
-
-  // NEW/FIXED Helper: Handles rendering text containing <span> tags into paragraphs
-  function convertToParagraphsWithHighlights(text) {
-    // Split by double newlines (paragraphs)
-    const paragraphs = text.split(/\n\s*\n/);
-
-    return paragraphs.map((p, index) => {
-      const trimmed = p.trim();
-      if (!trimmed) return '';
-
-      // Split into lines for <br> tags
-      const lines = trimmed.split('\n');
-
-      // Logic for the first paragraph's bold title
-      if (index === 0 && lines.length > 0) {
-        const firstLine = lines[0];
-        const remainingLines = lines.slice(1);
-
-        // Check if first line contains highlight spans or is too long for a title
-        if (firstLine.includes('<span class="highlight') || firstLine.length > 100) {
-          // Already highlighted or too long, just use <br> for lines
-          return `<p>${lines.join('<br>')}</p>`;
-        } else {
-          // Wrap first line in <strong>, then join with remaining lines using <br>
-          const firstLineHtml = `<strong>${firstLine}</strong>`;
-          if (remainingLines.length > 0) {
-            return `<p>${firstLineHtml}<br>${remainingLines.join('<br>')}</p>`;
-          } else {
-            return `<p>${firstLineHtml}</p>`;
-          }
-        }
-      } else {
-        // Regular paragraph, join lines with <br>
-        return `<p>${lines.join('<br>')}</p>`;
-      }
-    }).join('');
-  }
-
-  window.navigateToFindResult = function(index) {
-    if (window.findResults.length === 0) return;
-    
-    // Wrap around logic
-    if (index >= window.findResults.length) index = 0;
-    if (index < 0) index = window.findResults.length - 1;
-
-    window.currentFindIndex = index;
-
-    // Remove current highlight class from previous match
-    const previousActive = chapterContent.querySelector('.current-highlight');
-    if (previousActive) previousActive.classList.remove('current-highlight');
-
-    // Add current highlight class to the target match
-    const currentHighlight = document.getElementById(`match-${index}`);
-    if (currentHighlight) {
-        currentHighlight.classList.add('current-highlight');
-
-        // Scroll to the highlighted element
-        currentHighlight.scrollIntoView({
-            behavior: 'smooth',
-            block: 'center'
-        });
-    }
-
-    // Update results display
-    findResultsElement.textContent = `Result ${index + 1} of ${window.findResults.length} for "${window.findTerm}"`;
-  };
-
-  window.nextFindResult = function() {
-    if (window.findResults.length === 0) return;
-    let nextIndex = window.currentFindIndex + 1;
-    window.navigateToFindResult(nextIndex);
-  };
-
-  window.prevFindResult = function() {
-    if (window.findResults.length === 0) return;
-    let prevIndex = window.currentFindIndex - 1;
-    window.navigateToFindResult(prevIndex);
-  };
-
-  // The resetFindState flag is used to prevent the chapter from re-rendering during search preparation
-  window.clearHighlights = function(resetFindState = true) {
-    const findNavigation = document.getElementById("findNavigation");
-
-    if (resetFindState) {
-      // Reset all search state variables
-      window.findResults = [];
-      window.currentFindIndex = -1;
-      window.findTerm = '';
-      if(findInput) findInput.value = '';
-
-      findResultsElement.textContent = 'Enter a search term above';
-      if(findNavigation) findNavigation.style.display = 'none';
-    } else {
-      // Only clear active highlight class if we are preparing a new search
-      const activeHighlight = chapterContent.querySelector('.current-highlight');
-      if (activeHighlight) activeHighlight.classList.remove('current-highlight');
-    }
-
-    // Re-render the chapter without highlights if we reset the state
-    if (resetFindState && window.chapters.length > 0) {
-      renderChapter();
-    }
-  };
-
-  // Helper function for regex escaping
-  function escapeRegExp(string) {
-    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  }
-
-  // Ensure the HTML escaping function is correctly defined
-  function escapeHtml(text) {
-    if (typeof text !== 'string') return '';
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-  }
-
-  // ============================================
-  // REST OF THE FUNCTIONS
-  // ============================================
-
-  // Click anywhere to toggle nav
-  document.addEventListener('click', function(e) {
-    if (!e.target.closest('.nav-container') && !e.target.closest('.dropdown')) {
-      window.navVisible = !window.navVisible;
-      navContainer.style.display = window.navVisible ? 'block' : 'none';
-    }
-  });
-
-  // Pull-to-refresh variables
-  let startY = 0;
-  let currentY = 0;
-  let isRefreshing = false;
-
-  // Pull-to-refresh event listeners
-  document.addEventListener('touchstart', handleTouchStart, { passive: false });
-  document.addEventListener('touchmove', handleTouchMove, { passive: false });
-  document.addEventListener('touchend', handleTouchEnd);
-
-  // Event listeners
-  fileInput.addEventListener("change", handleFile);
-  modeToggleBtn.addEventListener("click", toggleTheme);
-  findReplaceInput.addEventListener("change", handleFindReplaceFile);
-  clearFindReplaceBtn.addEventListener("click", clearFindReplaceRules);
-  clearCacheBtn.addEventListener("click", clearAllCache);
-
-  // Font settings event listeners
-  fontSizeRange.addEventListener("input", () => {
-    fontSizeInput.value = fontSizeRange.value;
-    updateFontSize();
-  });
-
-  fontSizeInput.addEventListener("input", () => {
-    fontSizeRange.value = fontSizeInput.value;
-    updateFontSize();
-  });
-
-  lineHeightRange.addEventListener("input", () => {
-    lineHeightInput.value = lineHeightRange.value;
-    updateLineHeight();
-  });
-
-  lineHeightInput.addEventListener("input", () => {
-    lineHeightRange.value = lineHeightInput.value;
-    updateLineHeight();
-  });
-
-  fontButtons.forEach(button => {
-    button.addEventListener("click", () => {
-      const fontFamily = button.getAttribute("data-font");
-      chapterContent.style.fontFamily = fontFamily;
-      
-      // Update active state
-      fontButtons.forEach(btn => btn.classList.remove("active"));
-      button.classList.add("active");
-      
-      // Save to localStorage
-      localStorage.setItem('fontFamily', fontFamily);
-    });
-  });
-
-  resetSettingsBtn.addEventListener("click", resetSettings);
-
-  // NEW: Theme toggle function (replaces dark mode toggle)
-  function toggleTheme() {
-    const body = document.body;
-    
-    if (body.classList.contains('dark')) {
-      // If currently in dark mode, switch to warm mode
-      body.classList.remove('dark');
-      body.classList.add('warm');
-    } else if (body.classList.contains('warm')) {
-      // If currently in warm mode, switch to light mode
-      body.classList.remove('warm');
-    } else {
-      // If currently in light mode, switch to dark mode
-      body.classList.add('dark');
-    }
-    
-    // Save preference to localStorage
-    localStorage.setItem('theme', body.classList.toString());
-    updateModeButton();
-  }
-
-  // NEW: Updated mode button function
-  function updateModeButton() {
-    const body = document.body;
-    const sunIcon = document.querySelector('.sun-icon');
-    const moonIcon = document.querySelector('.moon-icon');
-    const warmIcon = document.querySelector('.warm-icon');
-    
-    // Reset all icons
-    sunIcon.style.opacity = '0';
-    moonIcon.style.opacity = '0';
-    warmIcon.style.opacity = '0';
-    
-    if (body.classList.contains('dark')) {
-      moonIcon.style.opacity = '1';
-    } else if (body.classList.contains('warm')) {
-      warmIcon.style.opacity = '1';
-    } else {
-      sunIcon.style.opacity = '1';
-    }
-  }
-
-  // NEW: Show/hide loading spinner
-  function showLoading(message = 'Loading...') {
-    loadingText.textContent = message;
-    loadingSpinner.classList.add('show');
-    chapterContent.classList.add('loading');
-  }
-
-  function hideLoading() {
-    loadingSpinner.classList.remove('show');
-    chapterContent.classList.remove('loading');
-  }
-
-  // Pull-to-refresh functions
-  function handleTouchStart(e) {
-    if (window.scrollY === 0 && window.chapters.length > 0) {
-      startY = e.touches[0].clientY;
-      isRefreshing = true;
-    }
-  }
-
-  function handleTouchMove(e) {
-    if (!isRefreshing) return;
-    
-    currentY = e.touches[0].clientY;
-    const pullDistance = currentY - startY;
-    
-    if (pullDistance > 0) {
-      e.preventDefault();
-      const indicatorHeight = Math.min(pullDistance, 60);
-      pullToRefreshIndicator.style.transform = `translateY(${indicatorHeight - 60}px)`;
-      
-      if (pullDistance > 100) {
-        pullToRefreshIndicator.classList.add('active');
-      } else {
-        pullToRefreshIndicator.classList.remove('active');
-      }
-    }
-  }
-
-  function handleTouchEnd() {
-    if (!isRefreshing) return;
-    
-    const pullDistance = currentY - startY;
-    
-    if (pullDistance > 100) {
-      // Trigger refresh
-      pullToRefreshIndicator.textContent = "↻ Refreshing...";
-      setTimeout(() => {
-        renderChapter(); // Reload current chapter
-        pullToRefreshIndicator.textContent = "✓ Refreshed!";
-        setTimeout(() => {
-          pullToRefreshIndicator.classList.remove('active');
-          pullToRefreshIndicator.style.transform = 'translateY(-100%)';
-          pullToRefreshIndicator.textContent = "↻ Release to refresh current chapter";
-        }, 1000);
-      }, 500);
-    } else {
-      pullToRefreshIndicator.classList.remove('active');
-      pullToRefreshIndicator.style.transform = 'translateY(-100%)';
-    }
-    
-    isRefreshing = false;
-    startY = 0;
-    currentY = 0;
-  }
-
-  // Bookmarking functions
-  function saveBookmark() {
-    if (window.chapters.length === 0) return;
-    
-    const bookmark = {
-      fileData: window.currentFileData,
-      currentIndex: window.currentIndex,
-      timestamp: Date.now()
-    };
-    
-    localStorage.setItem('novelReaderBookmark', JSON.stringify(bookmark));
-    showBookmarkIndicator();
-  }
-
-  function loadBookmark() {
-    const bookmarkData = localStorage.getItem('novelReaderBookmark');
-    if (!bookmarkData) return false;
-    
+  const reader = new FileReader();
+  reader.onload = (e) => {
     try {
-      const bookmark = JSON.parse(bookmarkData);
+      const rules = JSON.parse(e.target.result);
       
-      // Check if we have the same file loaded (basic check)
-      if (window.currentFileData && bookmark.fileData) {
-        // For simplicity, we'll assume it's the same file if the user hasn't loaded a new one
-        window.currentIndex = bookmark.currentIndex;
-        renderChapter();
-        updateDropdownHighlight();
-        showStatusIndicator('Bookmark restored');
-        return true;
-      }
-    } catch (e) {
-      console.error('Error loading bookmark:', e);
-    }
-    
-    return false;
-  }
-
-  function showBookmarkIndicator() {
-    bookmarkIndicator.classList.add('show');
-    setTimeout(() => {
-      bookmarkIndicator.classList.remove('show');
-    }, 2000);
-  }
-
-  function showStatusIndicator(message) {
-    statusIndicator.textContent = message;
-    statusIndicator.classList.add('show');
-    setTimeout(() => {
-      statusIndicator.classList.remove('show');
-    }, 2000);
-  }
-
-  // Auto-save function - UPDATED to 5 minutes
-  function startAutoSave() {
-    // Clear existing interval
-    if (window.autoSaveInterval) {
-      clearInterval(window.autoSaveInterval);
-    }
-    
-    // Save every 5 minutes (300,000 milliseconds)
-    window.autoSaveInterval = setInterval(() => {
-      if (window.chapters.length > 0) {
-        saveBookmark();
-        showStatusIndicator('Auto-saved');
-      }
-    }, 300000);
-  }
-
-  // FIXED: Simple hash function that works with Unicode characters
-  function simpleHash(str) {
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-      const char = str.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
-      hash = hash & hash; // Convert to 32-bit integer
-    }
-    return Math.abs(hash).toString(36); // Convert to base36 string
-  }
-
-  // FIXED: Chapter caching with safe encoding
-  function cacheChapters(fileData, processedChapters) {
-    // Use a simple hash instead of btoa to avoid encoding issues
-    const cacheKey = 'novelReaderCache_' + simpleHash(fileData.name + fileData.size + fileData.lastModified);
-    const cacheData = {
-      fileData: fileData,
-      chapters: processedChapters,
-      originalChapters: window.originalChapters, // Store original chapters
-      findReplaceRules: window.findReplaceRules, // Store find/replace rules too
-      timestamp: Date.now()
-    };
-    
-    try {
-      localStorage.setItem(cacheKey, JSON.stringify(cacheData));
-    } catch (e) {
-      console.warn('Could not cache chapters:', e);
-      clearOldCache();
-    }
-  }
-
-  function getCachedChapters(fileData) {
-    // Use the same hash function
-    const cacheKey = 'novelReaderCache_' + simpleHash(fileData.name + fileData.size + fileData.lastModified);
-    const cachedData = localStorage.getItem(cacheKey);
-    
-    if (!cachedData) return null;
-    
-    try {
-      const cache = JSON.parse(cachedData);
-      // Check if cache is less than 1 hour old
-      if (Date.now() - cache.timestamp < 60 * 60 * 1000) {
-        // Restore everything from cache
-        window.originalChapters = cache.originalChapters || cache.chapters;
-        window.findReplaceRules = cache.findReplaceRules || [];
+      // Validate the JSON structure
+      if (Array.isArray(rules)) {
+        // Check if each rule has 'find' and 'replace' properties
+        const isValid = rules.every(rule => 
+          rule && typeof rule.find === 'string' && typeof rule.replace === 'string'
+        );
         
-        // If we have find/replace rules, apply them to get the processed chapters
-        if (window.findReplaceRules.length > 0) {
-          window.chapters = [...window.originalChapters];
-          applyFindReplaceToChapters();
-          updateFindReplaceStatus(true, `Loaded ${window.findReplaceRules.length} find & replace rules from cache`);
+        if (isValid) {
+          window.findReplaceRules = rules;
+          updateFindReplaceStatus(true, `Loaded ${rules.length} find & replace rules`);
           updateCurrentRulesDisplay();
-        } else {
-          window.chapters = [...window.originalChapters];
-        }
-        
-        return window.chapters;
-      }
-    } catch (e) {
-      console.error('Error reading cache:', e);
-    }
-    
-    return null;
-  }
-
-  function clearOldCache() {
-    // Clear cache entries older than 24 hours
-    const now = Date.now();
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key && key.startsWith('novelReaderCache_')) {
-        try {
-          const cache = JSON.parse(localStorage.getItem(key));
-          if (now - cache.timestamp > 24 * 60 * 60 * 1000) {
-            localStorage.removeItem(key);
-          }
-        } catch (e) {
-          // If we can't parse it, remove it
-          localStorage.removeItem(key);
-        }
-      }
-    }
-  }
-
-  // ============================================
-  // FIND & REPLACE FUNCTIONS - FIXED VERSION
-  // ============================================
-
-  function handleFindReplaceFile(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const rules = JSON.parse(e.target.result);
-        
-        // Validate the JSON structure
-        if (Array.isArray(rules)) {
-          // Check if each rule has 'find' and 'replace' properties
-          const isValid = rules.every(rule => 
-            rule && typeof rule.find === 'string' && typeof rule.replace === 'string'
-          );
           
-          if (isValid) {
-            window.findReplaceRules = rules;
-            updateFindReplaceStatus(true, `Loaded ${rules.length} find & replace rules`);
-            updateCurrentRulesDisplay();
-            
-            // Apply find & replace to current chapters if any are loaded
-            if (window.originalChapters.length > 0) {
-              applyFindReplaceToChapters();
-              renderChapter();
-              showStatusIndicator('Find & replace rules applied');
-            }
-          } else {
-            throw new Error('Invalid JSON structure. Each rule must have "find" and "replace" properties.');
+          // Apply find & replace to current chapters if any are loaded
+          if (window.originalChapters.length > 0) {
+            applyFindReplaceToChapters();
+            renderChapter();
+            showStatusIndicator('Find & replace rules applied');
           }
         } else {
-          throw new Error('JSON should be an array of find/replace rules.');
+          throw new Error('Invalid JSON structure. Each rule must have "find" and "replace" properties.');
         }
-      } catch (error) {
-        updateFindReplaceStatus(false, `Error loading JSON: ${error.message}`);
-        console.error('Error parsing find & replace JSON:', error);
+      } else {
+        throw new Error('JSON should be an array of find/replace rules.');
       }
-    };
-    reader.readAsText(file);
-  }
+    } catch (error) {
+      updateFindReplaceStatus(false, `Error loading JSON: ${error.message}`);
+      console.error('Error parsing find & replace JSON:', error);
+    }
+  };
+  reader.readAsText(file);
+}
 
-  function applyFindReplaceToChapters() {
-    if (window.findReplaceRules.length === 0 || window.originalChapters.length === 0) return;
-    
-    // Always start from the original chapters
-    window.chapters = [...window.originalChapters];
-    
-    // Apply all rules to each chapter
-    window.chapters = window.chapters.map(chapterText => {
-      let modifiedText = chapterText;
-      window.findReplaceRules.forEach(rule => {
-        // Use global regex replacement
-        const regex = new RegExp(escapeRegExp(rule.find), 'g');
-        modifiedText = modifiedText.replace(regex, rule.replace);
-      });
-      return modifiedText;
+function applyFindReplaceToChapters() {
+  if (window.findReplaceRules.length === 0 || window.originalChapters.length === 0) return;
+  
+  // Always start from the original chapters
+  window.chapters = [...window.originalChapters];
+  
+  // Apply all rules to each chapter
+  window.chapters = window.chapters.map(chapterText => {
+    let modifiedText = chapterText;
+    window.findReplaceRules.forEach(rule => {
+      // Use global regex replacement
+      const regex = new RegExp(escapeRegExp(rule.find), 'g');
+      modifiedText = modifiedText.replace(regex, rule.replace);
     });
+    return modifiedText;
+  });
+}
+
+function updateFindReplaceStatus(success, message) {
+  findReplaceStatus.textContent = message;
+  findReplaceStatus.className = 'find-replace-status';
+  if (success) {
+    findReplaceStatus.classList.add('active');
   }
+}
 
-  function updateFindReplaceStatus(success, message) {
-    findReplaceStatus.textContent = message;
-    findReplaceStatus.className = 'find-replace-status';
-    if (success) {
-      findReplaceStatus.classList.add('active');
-    }
+function updateCurrentRulesDisplay() {
+  if (window.findReplaceRules.length === 0) {
+    currentRules.textContent = 'No rules loaded';
+    return;
   }
+  
+  const rulesHtml = window.findReplaceRules.map((rule, index) => 
+    `<div style="margin-bottom: 8px; padding: 5px; border-bottom: 1px solid rgba(0,0,0,0.1);">
+      <strong>Rule ${index + 1}:</strong><br>
+      <strong>Find:</strong> "${rule.find}"<br>
+      <strong>Replace:</strong> "${rule.replace}"
+    </div>`
+  ).join('');
+  
+  currentRules.innerHTML = rulesHtml;
+}
 
-  function updateCurrentRulesDisplay() {
-    if (window.findReplaceRules.length === 0) {
-      currentRules.textContent = 'No rules loaded';
-      return;
-    }
-    
-    const rulesHtml = window.findReplaceRules.map((rule, index) => 
-      `<div style="margin-bottom: 8px; padding: 5px; border-bottom: 1px solid rgba(0,0,0,0.1);">
-        <strong>Rule ${index + 1}:</strong><br>
-        <strong>Find:</strong> "${rule.find}"<br>
-        <strong>Replace:</strong> "${rule.replace}"
-      </div>`
-    ).join('');
-    
-    currentRules.innerHTML = rulesHtml;
+function clearFindReplaceRules() {
+  window.findReplaceRules = [];
+  updateFindReplaceStatus(false, 'Find & replace rules cleared');
+  updateCurrentRulesDisplay();
+  
+  // Reload the original text if we have chapters loaded
+  if (window.originalChapters.length > 0) {
+    // Restore original chapters to display
+    window.chapters = [...window.originalChapters];
+    renderChapter();
+    showStatusIndicator('Find & replace rules cleared');
   }
+  
+  // Clear the file input so the same file can be uploaded again
+  findReplaceInput.value = '';
+}
 
-  function clearFindReplaceRules() {
-    window.findReplaceRules = [];
-    updateFindReplaceStatus(false, 'Find & replace rules cleared');
-    updateCurrentRulesDisplay();
-    
-    // Reload the original text if we have chapters loaded
-    if (window.originalChapters.length > 0) {
-      // Restore original chapters to display
-      window.chapters = [...window.originalChapters];
-      renderChapter();
-      showStatusIndicator('Find & replace rules cleared');
-    }
-    
-    // Clear the file input so the same file can be uploaded again
-    findReplaceInput.value = '';
-  }
-
-  // Chapter navigation functions
-  function prevChapter() {
-    if (window.currentIndex > 0) {
-      window.currentIndex--;
-      renderChapter();
-      updateDropdownHighlight();
-      saveBookmark(); // Auto-save when navigating
-      window.clearHighlights(); // Clear find results when changing chapters
-    }
-  }
-
-  function nextChapter() {
-    if (window.currentIndex < window.chapters.length - 1) {
-      window.currentIndex++;
-      renderChapter();
-      updateDropdownHighlight();
-      saveBookmark(); // Auto-save when navigating
-      window.clearHighlights(); // Clear find results when changing chapters
-    }
-  }
-
-  function handleFile(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    // Quick file size check (50MB limit)
-    const maxSize = 50 * 1024 * 1024;
-    if (file.size > maxSize) {
-      alert(`File too large! Please choose a file smaller than 50MB. Your file is ${(file.size / (1024 * 1024)).toFixed(2)}MB`);
-      fileInput.value = '';
-      return;
-    }
-
-    // Simple loading indicator
-    showLoading('Loading file...');
-
-    window.currentFileData = {
-      name: file.name,
-      size: file.size,
-      lastModified: file.lastModified
-    };
-
-    // Check cache first (this is fast)
-    const cachedChapters = getCachedChapters(window.currentFileData);
-    if (cachedChapters) {
-      window.chapters = cachedChapters;
-      // Make sure we have original chapters
-      if (window.originalChapters.length === 0) {
-        window.originalChapters = [...window.originalChapters];
-      }
-      populateDropdown();
-      if (!loadBookmark()) window.currentIndex = 0;
-      renderChapter();
-      updateDropdownHighlight();
-      startAutoSave();
-      hideLoading();
-      showStatusIndicator('Loaded from cache');
-      return;
-    }
-
-    const ext = file.name.split(".").pop().toLowerCase();
-    
-    if (ext === "txt") {
-      const reader = new FileReader();
-      
-      // SIMPLIFIED: Fast loading without progress tracking
-      reader.onload = () => {
-        processText(reader.result);
-        cacheChapters(window.currentFileData, window.chapters);
-        hideLoading();
-      };
-      
-      reader.onerror = () => {
-        hideLoading();
-        alert('Error reading file.');
-      };
-      
-      reader.readAsText(file);
-    } else if (ext === "docx") {
-      const reader = new FileReader();
-      
-      reader.onload = (ev) => {
-        mammoth.extractRawText({ arrayBuffer: ev.target.result })
-          .then((result) => {
-            processText(result.value);
-            cacheChapters(window.currentFileData, window.chapters);
-            hideLoading();
-          })
-          .catch((err) => {
-            hideLoading();
-            alert("Error reading .docx: " + err);
-          });
-      };
-      
-      reader.onerror = () => {
-        hideLoading();
-        alert('Error reading file.');
-      };
-      
-      reader.readAsArrayBuffer(file);
-    } else {
-      hideLoading();
-      alert("Unsupported file type. Use .txt or .docx");
-    }
-  }
-
-  function processText(text) {
-    text = text.replace(/\r\n/g, '\n');
-    
-    // Enhanced chapter pattern to include Chinese chapter markers
-	const chapterPattern = /^\s*((?:외전\s*\d+\s*화|제\s*\d+\s*화|\d+\s*화|<(?:외전\s*|제\s*|특별단편\s*)?\d+\s*화>|外传\s*\d+\s*话|第\s*\d+\s*话|\d+\s*话|第\s*\d+\s*話|第[一二三四五六七八九十百千零\d]+\s*話|Chapter\s+\d+|Episode\s+\d+|완결 후기|序章|終章|人物介紹|自述|後記|卷末|外篇|プロローグ|エピローグ|0[1-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9]|6[0-9]|7[0-9]|8[0-9]|9[0-9]|插曲之[一二三四五六七八九十百千零\d]+|特別收錄|畫家\s*Free\s*Talk|附錄：角色手寫信|卷[一二三四五六七八九十百千零\d]+|章之[一二三四五六七八九十百千零\d]+|章[一二三四五六七八九十百千零\d]+|第[一二三四五六七八九十百千零\d]+章)(?:\s|\.|$|（|\(|──).*$)/gmi;    const chapterPositions = [];
-    let match;
-    while ((match = chapterPattern.exec(text)) !== null) {
-        if (match.index === 0 || text[match.index-1] === '\n') {
-            chapterPositions.push(match.index);
-        }
-    }
-
-    if (chapterPositions.length > 0) {
-        window.chapters = [];
-        window.originalChapters = []; // Initialize original chapters array
-        
-        if (chapterPositions[0] > 0) {
-            const firstChapter = text.substring(0, chapterPositions[0]).trim();
-            window.chapters.push(firstChapter);
-            window.originalChapters.push(firstChapter);
-        }
-        
-        for (let i = 0; i < chapterPositions.length; i++) {
-            const start = chapterPositions[i];
-            const end = (i < chapterPositions.length - 1) ? chapterPositions[i + 1] : text.length;
-            const chapterText = text.substring(start, end).trim();
-            if (chapterText) {
-                window.chapters.push(chapterText);
-                window.originalChapters.push(chapterText); // Store original
-            }
-        }
-    } else {
-        window.chapters = [text];
-        window.originalChapters = [text]; // Store original
-    }
-    
-    // IMPORTANT: Apply find & replace rules if any are loaded BEFORE populating dropdown
-    if (window.findReplaceRules.length > 0) {
-      applyFindReplaceToChapters();
-    }
-    
-    populateDropdown();
-    
-    // Try to load bookmark, otherwise start from beginning
-    if (!loadBookmark()) {
-      window.currentIndex = 0;
-    }
-    
+// Chapter navigation functions
+function prevChapter() {
+  if (window.currentIndex > 0) {
+    window.currentIndex--;
     renderChapter();
     updateDropdownHighlight();
-    startAutoSave(); // Start auto-save
+    saveBookmark(); // Auto-save when navigating
+    window.clearHighlights(); // Clear find results when changing chapters
+  }
+}
+
+function nextChapter() {
+  if (window.currentIndex < window.chapters.length - 1) {
+    window.currentIndex++;
+    renderChapter();
+    updateDropdownHighlight();
+    saveBookmark(); // Auto-save when navigating
+    window.clearHighlights(); // Clear find results when changing chapters
+  }
+}
+
+function handleFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  // Quick file size check (50MB limit)
+  const maxSize = 50 * 1024 * 1024;
+  if (file.size > maxSize) {
+    alert(`File too large! Please choose a file smaller than 50MB. Your file is ${(file.size / (1024 * 1024)).toFixed(2)}MB`);
+    fileInput.value = '';
+    return;
   }
 
-  // FIXED: renderChapter function to apply find & replace rules on the fly
-  function renderChapter() {
-    if (window.chapters.length > 0 && window.currentIndex >= 0 && window.currentIndex < window.chapters.length) {
-      // Get the current chapter text (already processed with find/replace if rules exist)
-      let chapterText = window.chapters[window.currentIndex];
-      
-      // Convert the modified text to HTML with paragraphs
-      const content = convertToParagraphs(chapterText);
-      chapterContent.innerHTML = content;
-      window.scrollTo(0, 0);
+  // Simple loading indicator
+  showLoading('Loading file...');
+
+  window.currentFileData = {
+    name: file.name,
+    size: file.size,
+    lastModified: file.lastModified
+  };
+
+  // Check cache first (this is fast)
+  const cachedChapters = getCachedChapters(window.currentFileData);
+  if (cachedChapters) {
+    window.chapters = cachedChapters;
+    // Make sure we have original chapters
+    if (window.originalChapters.length === 0) {
+      window.originalChapters = [...window.originalChapters];
     }
+    populateDropdown();
+    if (!loadBookmark()) window.currentIndex = 0;
+    renderChapter();
+    updateDropdownHighlight();
+    startAutoSave();
+    hideLoading();
+    showStatusIndicator('Loaded from cache');
+    return;
   }
 
-  function populateDropdown() {
-    chapterDropdown.innerHTML = "";
-    window.chapters.forEach((ch, i) => {
-        const firstLine = ch.split('\n')[0].trim();
-        let title = firstLine || `Chapter ${i + 1}`;
-        title = title.trim();
-        if (title.length > 50) {
-            title = title.substring(0, 47) + '...';
-        }
-        const item = document.createElement("div");
-        item.className = "dropdown-item";
-        item.textContent = title;
-        item.addEventListener("click", () => {
-          window.currentIndex = i;
-          renderChapter();
-          updateDropdownHighlight();
-          saveBookmark(); // Auto-save when selecting chapter
-          window.clearHighlights(); // Clear find results when changing chapters
-          document.querySelector('.nav-container')._x_dataStack[0].tocOpen = false;
+  const ext = file.name.split(".").pop().toLowerCase();
+  
+  if (ext === "txt") {
+    const reader = new FileReader();
+    
+    // SIMPLIFIED: Fast loading without progress tracking
+    reader.onload = () => {
+      processText(reader.result);
+      cacheChapters(window.currentFileData, window.chapters);
+      hideLoading();
+    };
+    
+    reader.onerror = () => {
+      hideLoading();
+      alert('Error reading file.');
+    };
+    
+    reader.readAsText(file);
+  } else if (ext === "docx") {
+    const reader = new FileReader();
+    
+    reader.onload = (ev) => {
+      mammoth.extractRawText({ arrayBuffer: ev.target.result })
+        .then((result) => {
+          processText(result.value);
+          cacheChapters(window.currentFileData, window.chapters);
+          hideLoading();
+        })
+        .catch((err) => {
+          hideLoading();
+          alert("Error reading .docx: " + err);
         });
-        chapterDropdown.appendChild(item);
-    });
-  }
-
-  // Function to update the current chapter highlight in the dropdown
-  function updateDropdownHighlight() {
-    const dropdownItems = document.querySelectorAll('.dropdown-item');
-    dropdownItems.forEach((item, index) => {
-      if (index === window.currentIndex) {
-        item.classList.add('current-chapter');
-      } else {
-        item.classList.remove('current-chapter');
-      }
-    });
-  }
-
-  function convertToParagraphs(text) {
-    // Split by double newlines (paragraphs)
-    const paragraphs = text.split(/\n\s*\n/);
+    };
     
-    // Wrap each paragraph in <p> tags and preserve single line breaks with <br>
-    return paragraphs.map((p, index) => {
-      // Trim whitespace and replace single newlines with <br>
-      const lines = p.trim().split('\n');
+    reader.onerror = () => {
+      hideLoading();
+      alert('Error reading file.');
+    };
+    
+    reader.readAsArrayBuffer(file);
+  } else {
+    hideLoading();
+    alert("Unsupported file type. Use .txt or .docx");
+  }
+}
+
+function renderChapter() {
+  if (window.chapters.length > 0 && window.currentIndex >= 0 && window.currentIndex < window.chapters.length) {
+    // Get the current chapter text (already processed with find/replace if rules exist)
+    let chapterText = window.chapters[window.currentIndex];
+    
+    // Convert the modified text to HTML with paragraphs
+    const content = convertToParagraphs(chapterText);
+    chapterContent.innerHTML = content;
+    window.scrollTo(0, 0);
+  }
+}
+
+function populateDropdown() {
+  chapterDropdown.innerHTML = "";
+  window.chapters.forEach((ch, i) => {
+    const firstLine = ch.split('\n')[0].trim();
+    let title = firstLine || `Chapter ${i + 1}`;
+    title = title.trim();
+    if (title.length > 50) {
+      title = title.substring(0, 47) + '...';
+    }
+    const item = document.createElement("div");
+    item.className = "dropdown-item";
+    item.textContent = title;
+    item.addEventListener("click", () => {
+      window.currentIndex = i;
+      renderChapter();
+      updateDropdownHighlight();
+      saveBookmark(); // Auto-save when selecting chapter
+      window.clearHighlights(); // Clear find results when changing chapters
+      document.querySelector('.nav-container')._x_dataStack[0].tocOpen = false;
+    });
+    chapterDropdown.appendChild(item);
+  });
+}
+
+// Function to update the current chapter highlight in the dropdown
+function updateDropdownHighlight() {
+  const dropdownItems = document.querySelectorAll('.dropdown-item');
+  dropdownItems.forEach((item, index) => {
+    if (index === window.currentIndex) {
+      item.classList.add('current-chapter');
+    } else {
+      item.classList.remove('current-chapter');
+    }
+  });
+}
+
+function convertToParagraphs(text) {
+  // Split by double newlines (paragraphs)
+  const paragraphs = text.split(/\n\s*\n/);
+  
+  // Wrap each paragraph in <p> tags and preserve single line breaks with <br>
+  return paragraphs.map((p, index) => {
+    // Trim whitespace and replace single newlines with <br>
+    const lines = p.trim().split('\n');
+    
+    // For the first paragraph of the chapter, make the first line bold
+    if (index === 0 && lines.length > 0) {
+      // Make the first line bold, keep the rest normal
+      const firstLine = `<strong>${escapeHtml(lines[0])}</strong>`;
+      const remainingLines = lines.slice(1);
       
-      // For the first paragraph of the chapter, make the first line bold
-      if (index === 0 && lines.length > 0) {
-        // Make the first line bold, keep the rest normal
-        const firstLine = `<strong>${escapeHtml(lines[0])}</strong>`;
-        const remainingLines = lines.slice(1);
-        
-        if (remainingLines.length > 0) {
-          return `<p>${firstLine}<br>${remainingLines.map(escapeHtml).join('<br>')}</p>`;
-        } else {
-          return `<p>${firstLine}</p>`;
-        }
+      if (remainingLines.length > 0) {
+        return `<p>${firstLine}<br>${remainingLines.map(escapeHtml).join('<br>')}</p>`;
       } else {
-        return `<p>${lines.map(escapeHtml).join('<br>')}</p>`;
+        return `<p>${firstLine}</p>`;
       }
-    }).join('');
-  }
+    } else {
+      return `<p>${lines.map(escapeHtml).join('<br>')}</p>`;
+    }
+  }).join('');
+}
 
-  function copyChapterText() {
-    if (!window.chapters.length) return;
-    
-    // Create temporary element to get text content without HTML tags
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = window.chapters[window.currentIndex];
-    const textToCopy = tempDiv.textContent;
-    
-    navigator.clipboard.writeText(textToCopy).then(() => {
-      showTooltip();
-    }).catch(() => {
-      alert("Copy failed. Try again.");
-    });
-  }
+function copyChapterText() {
+  if (!window.chapters.length) return;
+  
+  // Create temporary element to get text content without HTML tags
+  const tempDiv = document.createElement('div');
+  tempDiv.innerHTML = window.chapters[window.currentIndex];
+  const textToCopy = tempDiv.textContent;
+  
+  navigator.clipboard.writeText(textToCopy).then(() => {
+    showTooltip();
+  }).catch(() => {
+    alert("Copy failed. Try again.");
+  });
+}
 
-  function showTooltip() {
-    const tooltip = document.createElement("div");
-    tooltip.id = "copyTooltip";
-    tooltip.textContent = "Copied!";
-    tooltip.style.position = "fixed";
-    tooltip.style.bottom = "85px";
-    tooltip.style.right = "35px";
-    tooltip.style.background = "#333";
-    tooltip.style.color = "#fff";
-    tooltip.style.padding = "6px 12px";
-    tooltip.style.borderRadius = "4px";
-    tooltip.style.fontSize = "14px";
-    tooltip.style.zIndex = "1001";
-    document.body.appendChild(tooltip);
-    
+function showTooltip() {
+  const tooltip = document.createElement("div");
+  tooltip.id = "copyTooltip";
+  tooltip.textContent = "Copied!";
+  tooltip.style.position = "fixed";
+  tooltip.style.bottom = "85px";
+  tooltip.style.right = "35px";
+  tooltip.style.background = "#333";
+  tooltip.style.color = "#fff";
+  tooltip.style.padding = "6px 12px";
+  tooltip.style.borderRadius = "4px";
+  tooltip.style.fontSize = "14px";
+  tooltip.style.zIndex = "1001";
+  document.body.appendChild(tooltip);
+  
+  setTimeout(() => {
+    tooltip.style.opacity = "1";
     setTimeout(() => {
-      tooltip.style.opacity = "1";
+      tooltip.style.opacity = "0";
       setTimeout(() => {
-        tooltip.style.opacity = "0";
-        setTimeout(() => {
-          document.body.removeChild(tooltip);
-        }, 300);
-      }, 1500);
-    }, 10);
-  }
+        document.body.removeChild(tooltip);
+      }, 300);
+    }, 1500);
+  }, 10);
+}
 
-  function updateFontSize() {
-    const size = fontSizeInput.value + "px";
-    chapterContent.style.fontSize = size;
-    localStorage.setItem('fontSize', fontSizeInput.value);
-  }
+function updateFontSize() {
+  const size = fontSizeInput.value + "px";
+  chapterContent.style.fontSize = size;
+  localStorage.setItem('fontSize', fontSizeInput.value);
+}
 
-  function updateLineHeight() {
-    chapterContent.style.lineHeight = lineHeightInput.value;
-    localStorage.setItem('lineHeight', lineHeightInput.value);
-  }
+function updateLineHeight() {
+  chapterContent.style.lineHeight = lineHeightInput.value;
+  localStorage.setItem('lineHeight', lineHeightInput.value);
+}
 
-  function resetSettings() {
-    // Reset to default values
-    fontSizeInput.value = 16;
-    fontSizeRange.value = 16;
-    lineHeightInput.value = 1.6;
-    lineHeightRange.value = 1.6;
-    
-    // Update the UI
-    updateFontSize();
-    updateLineHeight();
-    
-    // Reset font family
-    const defaultFont = "Arial, sans-serif";
-    chapterContent.style.fontFamily = defaultFont;
+function resetSettings() {
+  // Reset to default values
+  fontSizeInput.value = 16;
+  fontSizeRange.value = 16;
+  lineHeightInput.value = 1.6;
+  lineHeightRange.value = 1.6;
+  
+  // Update the UI
+  updateFontSize();
+  updateLineHeight();
+  
+  // Reset font family
+  const defaultFont = "Arial, sans-serif";
+  chapterContent.style.fontFamily = defaultFont;
+  fontButtons.forEach(btn => {
+    btn.classList.remove("active");
+    if (btn.getAttribute("data-font") === defaultFont) {
+      btn.classList.add("active");
+    }
+  });
+  
+  // Clear localStorage for settings
+  localStorage.removeItem('fontSize');
+  localStorage.removeItem('lineHeight');
+  localStorage.removeItem('fontFamily');
+}
+
+// ============================================
+// INITIALIZATION
+// ============================================
+
+// Initialize everything when page loads
+window.addEventListener("load", () => {
+  // 1. Theme (light/dark/warm)
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme) {
+    document.body.className = savedTheme;
+  }
+  updateModeButton();
+  
+  // 2. Font size
+  const savedFontSize = localStorage.getItem('fontSize');
+  if (savedFontSize) {
+    fontSizeInput.value = savedFontSize;
+    fontSizeRange.value = savedFontSize;
+    chapterContent.style.fontSize = savedFontSize + "px";
+  }
+  
+  // 3. Line height
+  const savedLineHeight = localStorage.getItem('lineHeight');
+  if (savedLineHeight) {
+    lineHeightInput.value = savedLineHeight;
+    lineHeightRange.value = savedLineHeight;
+    chapterContent.style.lineHeight = savedLineHeight;
+  }
+  
+  // 4. Font family
+  const savedFontFamily = localStorage.getItem('fontFamily');
+  if (savedFontFamily) {
+    chapterContent.style.fontFamily = savedFontFamily;
     fontButtons.forEach(btn => {
       btn.classList.remove("active");
-      if (btn.getAttribute("data-font") === defaultFont) {
+      if (btn.getAttribute("data-font") === savedFontFamily) {
         btn.classList.add("active");
       }
     });
-    
-    // Clear localStorage for settings
-    localStorage.removeItem('fontSize');
-    localStorage.removeItem('lineHeight');
-    localStorage.removeItem('fontFamily');
+  } else {
+    // Set default active font button
+    document.querySelector('.font-button[data-font="Arial, sans-serif"]').classList.add("active");
   }
+  
+  // 5. NEW: Load chapter patterns
+  loadPatterns();
 
-  // Initialize from localStorage
-  window.addEventListener("load", () => {
-    // Theme (light/dark/warm)
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-      document.body.className = savedTheme;
-    }
-    updateModeButton();
-    
-    // Font size
-    const savedFontSize = localStorage.getItem('fontSize');
-    if (savedFontSize) {
-      fontSizeInput.value = savedFontSize;
-      fontSizeRange.value = savedFontSize;
-      chapterContent.style.fontSize = savedFontSize + "px";
-    }
-    
-    // Line height
-    const savedLineHeight = localStorage.getItem('lineHeight');
-    if (savedLineHeight) {
-      lineHeightInput.value = savedLineHeight;
-      lineHeightRange.value = savedLineHeight;
-      chapterContent.style.lineHeight = savedLineHeight;
-    }
-    
-    // Font family
-    const savedFontFamily = localStorage.getItem('fontFamily');
-    if (savedFontFamily) {
-      chapterContent.style.fontFamily = savedFontFamily;
-      fontButtons.forEach(btn => {
-        btn.classList.remove("active");
-        if (btn.getAttribute("data-font") === savedFontFamily) {
-          btn.classList.add("active");
-        }
-      });
-    } else {
-      // Set default active font button
-      document.querySelector('.font-button[data-font="Arial, sans-serif"]').classList.add("active");
-    }
-
-    // Try to load bookmark on page load if we have a file in cache
-    const bookmarkData = localStorage.getItem('novelReaderBookmark');
-    if (bookmarkData) {
-      try {
-        const bookmark = JSON.parse(bookmarkData);
-        if (bookmark.fileData) {
-          const cachedChapters = getCachedChapters(bookmark.fileData);
-          if (cachedChapters) {
-            window.chapters = cachedChapters;
-            // Make sure we have original chapters
-            if (window.originalChapters.length === 0) {
-              window.originalChapters = [...window.originalChapters];
-            }
-            window.currentFileData = bookmark.fileData;
-            window.currentIndex = bookmark.currentIndex;
-            populateDropdown();
-            renderChapter();
-            updateDropdownHighlight();
-            startAutoSave();
-            showStatusIndicator('Bookmark restored');
+  // 6. Try to load bookmark on page load if we have a file in cache
+  const bookmarkData = localStorage.getItem('novelReaderBookmark');
+  if (bookmarkData) {
+    try {
+      const bookmark = JSON.parse(bookmarkData);
+      if (bookmark.fileData) {
+        const cachedChapters = getCachedChapters(bookmark.fileData);
+        if (cachedChapters) {
+          window.chapters = cachedChapters;
+          // Make sure we have original chapters
+          if (window.originalChapters.length === 0) {
+            window.originalChapters = [...window.originalChapters];
           }
+          window.currentFileData = bookmark.fileData;
+          window.currentIndex = bookmark.currentIndex;
+          populateDropdown();
+          renderChapter();
+          updateDropdownHighlight();
+          startAutoSave();
+          showStatusIndicator('Bookmark restored');
         }
-      } catch (e) {
-        console.error('Error loading bookmark on startup:', e);
       }
+    } catch (e) {
+      console.error('Error loading bookmark on startup:', e);
     }
-  });
+  }
+  
+  // 7. Auto-clear old cache on startup
+  setTimeout(clearOldCache, 1000);
+});
 
-  // Save bookmark when page is about to unload
-  window.addEventListener('beforeunload', () => {
-    if (window.chapters.length > 0) {
-      saveBookmark();
-    }
-  });
+// Save bookmark when page is about to unload
+window.addEventListener('beforeunload', () => {
+  if (window.chapters.length > 0) {
+    saveBookmark();
+  }
+});
 
-  // NEW: Auto-clear old cache on startup
-  window.addEventListener("load", () => {
-    setTimeout(clearOldCache, 1000);
-  });
+// NEW: Auto-clear old cache on startup
+window.addEventListener("load", () => {
+  setTimeout(clearOldCache, 1000);
+});
 </script>
 </body>
 </html>

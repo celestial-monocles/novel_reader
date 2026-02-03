@@ -300,58 +300,70 @@
       padding-bottom: 0;
     }
   }
-
-  /* MOBILE OPTIMIZATION - OPTION 4 */
-  @media (max-width: 767px) {
-    .nav-bar {
-      justify-content: space-around;
-      padding: 8px 5px;
-    }
-    
-    /* Hide secondary buttons on mobile */
-    .nav-button:nth-child(2), /* Patterns */
-    .nav-button:nth-child(4), /* Fonts */
-    .nav-button:nth-child(5), /* Find */
-    .mode-toggle-btn { /* Theme */
-      display: none;
-    }
-    
-    /* Show essential buttons */
-    .file-upload-button,
-    .nav-button:nth-child(3), /* TOC */
-    .nav-button:nth-last-child(3), /* Copy */
-    .nav-button:nth-last-child(2), /* Prev */
-    .nav-button:nth-last-child(1), /* Next */
-    .more-button {
-      display: flex;
-      width: 52px;
-      height: 52px;
-      margin: 0 3px;
-    }
-    
-    .more-button {
-      background: var(--btn);
-    }
-    
-    /* Adjust dropdown position for better visibility */
-    .dropdown {
-      bottom: 70px;
-      max-width: 90%; /* Keep 90% on mobile for all dropdowns */
-    }
-    
-    /* More options dropdown specific styling */
-    .more-dropdown .dropdown-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 12px 15px;
-    }
-    
-    .more-dropdown .dropdown-item svg {
-      width: 18px;
-      height: 18px;
-    }
+/* MOBILE OPTIMIZATION - OPTION 4 */
+@media (max-width: 767px) {
+  .nav-bar {
+    justify-content: space-around;
+    padding: 8px 5px;
   }
+  
+  /* Hide secondary buttons on mobile */
+  .nav-button:nth-child(2), /* Patterns */
+  .nav-button:nth-child(4), /* Fonts */
+  .nav-button:nth-child(5), /* Find */
+  .mode-toggle-btn { /* Theme */
+    display: none;
+  }
+  
+  /* Show essential buttons */
+  .file-upload-button,
+  .nav-button:nth-child(3), /* TOC */
+  .nav-button:nth-last-child(3), /* Copy */
+  .nav-button:nth-last-child(2), /* Prev */
+  .nav-button:nth-last-child(1), /* Next */
+  .more-button {
+    display: flex;
+    width: 52px;
+    height: 52px;
+    margin: 0 3px;
+  }
+  
+  .more-button {
+    background: var(--btn);
+  }
+  
+  /* Adjust dropdown position for better visibility */
+  .dropdown {
+    bottom: 70px;
+    max-width: 90%; /* Keep 90% on mobile for all dropdowns */
+  }
+  
+  /* More options dropdown specific styling */
+  .more-dropdown .dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 15px;
+  }
+  
+  .more-dropdown .dropdown-item svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/* NEW: Hide more-button on desktop */
+@media (min-width: 768px) {
+  .more-button {
+    display: none !important;
+  }
+  
+  /* Ensure all other buttons are visible on desktop */
+  .nav-button,
+  .mode-toggle-btn {
+    display: flex !important;
+  }
+}
 
   .mode-icon {
     width: 24px;
@@ -1082,7 +1094,7 @@
         <path fill="currentColor" d="M18.4,6.6c-0.3,0-0.5-0.1-0.7-0.3c-0.4-0.4-0.4-1,0-1.4l1.4-1.4c0.4-0.4,1-0.4,1.4,0s0.4,1,0,1.4l-1.4,1.4C18.9,6.5,18.7,6.6,18.4,6.6z"/>
       </svg>
       <svg class="mode-icon moon-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path fill="currentColor" d="M12.1,22c-0.3,0-0.6,0-0.9,0c-5.5-0.5-9.5-5.4-9-10.9c0.4-4.8,4.2-8.6,9-9c0.4,0,0.8,0.2,1,0.5c0.2,0.3,0.2,0.8-0.1,1.1c-2,2.7-1.4,6.4,1.3,8.4c2.1,1.6,5,1.6,7.1,0c0.3-0.2,0.7-0.3,1.1-0.1c0.3,0.2,0.5,0.6,0.5,1c-0.2,2.7-1.5,5.1-3.6,6.8C16.6,21.2,14.4,22,12.1,22zM9.3,4.4c-2.9,1-5,3.6-5.2,6.8c-0.4,4.4,2.8,8.3,7.2,8.7c2.1,0.2,4.2-0.4,5.8-1.8c1.1-0.9,1.9-2.1,2.4-3.4c-2.5,0.9-5.3,0.5-7.5-1.1C9.2,11.4,8.1,7.7,9.3,4.4z"/>
+        <path fill="currentColor" d="M12.1,22c-0.3,0-0.6,0-0.9,0c-5.5-0.5-9.5的五.4-9-10.9c0.4-4.8,4.2-8.6,9-9c0.4,0,0.8,0.2,1,0.5c0.2,0.3,0.2,0.8-0.1,1.1c-2,2.7-1.4,6.4,1.3,8.4c2.1,1.6,5,1.6,7.1,0c0.3-0.2,0.7-0.3,1.1-0.1c0.3,0.2,0.5,0.6,0.5,1c-0.2,2.7-1.5,5.1-3.6,6.8C16.6,21.2,14.4,22,12.1,22zM9.3,4.4c-2.9,1-5,3.6-5.2,6.8c-0.4,4.4,2.8,8.3,7.2,8.7c2.1,0.2,4.2-0.4,5.8-1.8c1.1-0.9,1.9-2.1,2.4-3.4c-2.5,0.9-5.3,0.5-7.5-1.1C9.2,11.4,8.1,7.7,9.3,4.4z"/>
       </svg>
       <!-- Warm mode icon -->
       <svg class="mode-icon warm-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -1173,9 +1185,9 @@
       <div class="pattern-group">
         <h4>Japanese Patterns</h4>
         <div class="pattern-checkbox">
-          <input type="checkbox" id="pattern-jp-chapter" data-pattern="第\s*\d+\s*章" checked>
-          <label for="pattern-jp-chapter">第X章 (Chapter X)</label>
-        </div>
+		  <input type="checkbox" id="pattern-jp-chapter" data-pattern="第\s*[一二三四五六七八九十百千零\d]+\s*話" checked>
+		  <label for="pattern-jp-chapter">第X話 (Chapter X)</label>
+		</div>
         <div class="pattern-checkbox">
           <input type="checkbox" id="pattern-jp-episode" data-pattern="エピソード\s*\d+" checked>
           <label for="pattern-jp-episode">エピソードX (Episode X)</label>
@@ -1239,6 +1251,19 @@
         <div class="pattern-checkbox">
           <input type="checkbox" id="pattern-en-number" data-pattern="^\s*\d+\.\s" checked>
           <label for="pattern-en-number">1. Title (Numbered)</label>
+        </div>
+      </div>
+      
+      <!-- NEW: Comprehensive Pattern Group -->
+      <div class="pattern-group">
+        <h4>Comprehensive Patterns</h4>
+        <div class="pattern-checkbox">
+          <input type="checkbox" id="pattern-comprehensive" data-pattern="外伝\s*\d+\s*화|제\s*\d+\s*화|\d+\s*화|外传\s*\d+\s*话|第\s*\d+\s*话|\d+\s*话|第\s*\d+\s*話|第[一二三四五六七八九十百千零\d]+\s*話|Chapter\s+\d+|Episode\s+\d+|완결 후기|序章|終章|人物紹介|自述|後記|卷末|外篇|プロローグ|エピローグ|0[1-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9]|6[0-9]|7[0-9]|8[0-9]|9[0-9]|插曲之[一二三四五六七八九十百千零\d]+|特別收錄|畫家\s*Free\s*Talk|附錄：角色手寫信|卷[一二三四五六七八九十百千零\d]+|章之[一二三四五六七八九十百千零\d]+|章[一二三四五六七八九十百千零\d]+|第[一二三四五六七八九十百千零\d]+章" checked>
+          <label for="pattern-comprehensive">Comprehensive Multi-language Pattern</label>
+        </div>
+        <div class="pattern-checkbox">
+          <input type="checkbox" id="pattern-bracket" data-pattern="&lt;(?:外伝\s*|제\s*|特別単篇\s*)?\d+\s*화&gt;" checked>
+          <label for="pattern-bracket">Bracket patterns (&lt;外伝 1화&gt;, &lt;제 1화&gt;)</label>
         </div>
       </div>
       
@@ -1450,7 +1475,9 @@ window.chapterPatterns = {
     'en-chapter': true,
     'en-episode': true,
     'en-prologue': true,
-    'en-number': true
+    'en-number': true,
+    'comprehensive': true,
+    'bracket': true
   },
   customPatterns: []
 };
@@ -1517,7 +1544,7 @@ function buildChapterPattern() {
   
   // Add enabled built-in patterns
   const patternMap = {
-    'jp-chapter': '第\\s*\\d+\\s*章',
+    'jp-chapter': '第\\s*[一二三四五六七八九十百千零\\d]+\\s*話',
     'jp-episode': 'エピソード\\s*\\d+',
     'jp-number': '^\\s*\\d+(?:\\.\\d+)*\\s*[\\.\\s]',
     'jp-extra': '閑話|外伝|特別編',
@@ -1530,7 +1557,9 @@ function buildChapterPattern() {
     'en-chapter': 'Chapter\\s+\\d+',
     'en-episode': 'Episode\\s+\\d+',
     'en-prologue': 'Prologue|Epilogue',
-    'en-number': '^\\s*\\d+\\.\\s'
+    'en-number': '^\\s*\\d+\\.\\s',
+    'comprehensive': '外伝\\s*\\d+\\s*화|제\\s*\\d+\\s*화|\\d+\\s*화|外传\\s*\\d+\\s*话|第\\s*\\d+\\s*话|\\d+\\s*话|第\\s*\\d+\\s*話|第[一二三四五六七八九十百千零\\d]+\\s*話|Chapter\\s+\\d+|Episode\\s+\\d+|완결 후기|序章|終章|人物紹介|自述|後記|卷末|外篇|プロローグ|エピローグ|0[1-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9]|6[0-9]|7[0-9]|8[0-9]|9[0-9]|插曲之[一二三四五六七八九十百千零\\d]+|特別收錄|畫家\\s*Free\\s*Talk|附錄：角色手寫信|卷[一二三四五六七八九十百千零\\d]+|章之[一二三四五六七八九十百千零\\d]+|章[一二三四五六七八九十百千零\\d]+|第[一二三四五六七八九十百千零\\d]+章',
+    'bracket': '<(?:外伝\\s*|제\\s*|特別単篇\\s*)?\\d+\\s*화>'
   };
   
   Object.entries(patternMap).forEach(([id, pattern]) => {
@@ -1552,6 +1581,50 @@ function buildChapterPattern() {
   // Combine patterns with OR operator
   const combinedPattern = patterns.map(p => `(${p})`).join('|');
   return new RegExp(`^\\s*(?:${combinedPattern})`, 'i');
+}
+
+// Add this debugging function
+function debugPatternTest() {
+  console.log('=== PATTERN DEBUG ===');
+  console.log('Enabled patterns:', window.chapterPatterns.enabled);
+  
+  // Build the pattern and test it
+  const testPattern = buildChapterPattern();
+  console.log('Built pattern:', testPattern);
+  
+  // Test some strings from your comprehensive pattern
+  const testStrings = [
+    '外伝 1화',
+    '제 1화',
+    '1화',
+    '<외전 1화>',
+    '<제 1화>',
+    'Chapter 1',
+    'Episode 1',
+    '第1話',
+    '第百話',
+    'プロローグ',
+    'エピローグ',
+    '序章',
+    '終章',
+    '卷末',
+    '外篇',
+    '卷一',
+    '第一章',
+    '第1章',
+    '特別收錄',
+    '완결 후기',
+    '人物紹介',
+    '自述',
+    '後記'
+  ];
+  
+  testStrings.forEach(str => {
+    const matches = testPattern.test(str);
+    console.log(`"${str}" matches: ${matches ? '✓' : '✗'}`);
+  });
+  
+  console.log('=== END DEBUG ===');
 }
 
 // Enhanced chapter detection with configurable patterns
@@ -2785,8 +2858,11 @@ window.addEventListener("load", () => {
   
   // 5. NEW: Load chapter patterns
   loadPatterns();
+  
+  // 6. Debug patterns on page load
+  debugPatternTest();
 
-  // 6. Try to load bookmark on page load if we have a file in cache
+  // 7. Try to load bookmark on page load if we have a file in cache
   const bookmarkData = localStorage.getItem('novelReaderBookmark');
   if (bookmarkData) {
     try {
@@ -2813,19 +2889,7 @@ window.addEventListener("load", () => {
     }
   }
   
-  // 7. Auto-clear old cache on startup
-  setTimeout(clearOldCache, 1000);
-});
-
-// Save bookmark when page is about to unload
-window.addEventListener('beforeunload', () => {
-  if (window.chapters.length > 0) {
-    saveBookmark();
-  }
-});
-
-// NEW: Auto-clear old cache on startup
-window.addEventListener("load", () => {
+  // 8. Auto-clear old cache on startup
   setTimeout(clearOldCache, 1000);
 });
 </script>
